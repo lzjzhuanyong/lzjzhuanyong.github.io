@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="forge.min.js"></script>
+</head>
+<body>
+    <h1>Signature Tool</h1>
+    <p>
+        base url: <input type='text' id="baseurl" value="https://api.binance.com/">
+    </p>
+    <p>
+        path: <input type='text' id="path">
+    </p>
+    <p>
+       symbol: <input type='text' id="symbol">
+       side: <input type='text' id="side">
+       type: <input type='text' id='type'>
+       timeInForce: <input type="text" id='timeInForce'>
+       quantity: <input type='text' id="quantity">
+       price: <input type="text" id="price">
+       recvWindow: <input type='text' id="recvWindow" value=5000>
+       timestamp: <input type="text" id='timestamp'>
+    </p>
+    <p>
+        secretKey: <input type='text' id="secretKey" size=70>
+        signature: <input type='text' id='signature' size=70>
+    </p>
+    <button id='button1'>submit</button>
+
+    <p>
+        querystring: 
+    </p>
+    <textarea id='querystring' cols=150 rows=4 style='resize:none'></textarea>
+    <p>
+        URL command: 
+    </p>
+    <textarea id='URLcommand' cols=150 rows=4 style='resize:none'></textarea>
+</body>
+    <script type='text/javascript'>
+
+        
+
+        const hmac = forge.hmac.create();
+
+        let baseurl = document.querySelector("#baseurl");
+        let path = document.querySelector("#path");
+
+        let button1 = document.querySelector('#button1');
+
+        let secretKey = document.querySelector('#secretKey');
+        let symbol = document.querySelector('#symbol');
+
+        let side = document.querySelector("#side");
+        let type = document.querySelector("#type");
+        let timeInForce = document.querySelector("#timeInForce");
+        let quantity = document.querySelector('#quantity');
+        let price = document.querySelector("#price");
+        let recvWindow = document.querySelector("#recvWindow");
+
+        let timestamp = document.querySelector('#timestamp');
+
+        let data = {};
+
+        let signature = document.querySelector('#signature');
+
+        let querystring = document.querySelector("#querystring");
+        let URLcommand = document.querySelector("#URLcommand");
+
+        button1.addEventListener('click',()=>{
+            hmac.start('sha256',secretKey.value);
+
+            data.symbol = symbol.value
+            data.side = side.value
+            data.type = type.value
+            data.timeInForce = timeInForce.value
+            data.quantity = quantity.value
+            data.price = price.value
+            data.recvWindow = recvWindow.value
+            data.timestamp = timestamp.value
+
+            let queryparameter = '';
+            for(let parameter in data){
+                if(data[parameter])
+                    queryparameter = queryparameter+parameter+'='+data[parameter]+"&";
+            }
+
+            queryparameter = queryparameter.substr(0,queryparameter.length-1);
+            console.log(queryparameter)
+
+            hmac.update(queryparameter);
+            signature.value = hmac.digest().toHex();
+
+            querystring.value = queryparameter+"&"+"signature="+signature.value;
+            URLcommand.value = baseurl.value+path.value+'?'+querystring.value;
+        })
+
+
+        let int = setInterval(()=>{
+            timestamp.value = Date.now();
+        },10)
+        
+        timestamp.addEventListener('mouseenter',()=>{
+            timestamp.value = Date.now();
+            clearInterval(int);
+        })
+        
+        timestamp.addEventListener('mouseout',()=>{
+            int = setInterval(()=>{
+                timestamp.value = Date.now();
+            },10)
+        })
+        
+
+    </script>
+
+</html>
