@@ -12,6 +12,7 @@
         path: <input type='text' id="path">
     </p>
     <p>
+       asset: <input type="text" id="asset">
        symbol: <input type='text' id="symbol">
        side: <input type='text' id="side">
        type: <input type='text' id='type'>
@@ -48,6 +49,8 @@
         let button1 = document.querySelector('#button1');
 
         let secretKey = document.querySelector('#secretKey');
+
+        let asset = document.querySelector("#asset");
         let symbol = document.querySelector('#symbol');
 
         let side = document.querySelector("#side");
@@ -69,6 +72,7 @@
         button1.addEventListener('click',()=>{
             hmac.start('sha256',secretKey.value);
 
+            data.asset = asset.value
             data.symbol = symbol.value
             data.side = side.value
             data.type = type.value
