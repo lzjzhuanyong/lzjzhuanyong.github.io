@@ -102,18 +102,38 @@
         let int = setInterval(()=>{
             timestamp.value = Date.now();
         },10)
+
+        //control the timestamp, if timeStop is true, then timestamp can move on at present time; if timeStop is false, timestamp will stop. 
+        let timeStop = false; 
         
         timestamp.addEventListener('mouseenter',()=>{
             timestamp.value = Date.now();
             clearInterval(int);
+            //console.log("enter:",timeStop)
         })
         
         timestamp.addEventListener('mouseout',()=>{
-            int = setInterval(()=>{
-                timestamp.value = Date.now();
-            },10)
+            if(timeStop){
+                //console.log("out1:",timeStop)
+            }
+            else{
+                int = setInterval(()=>{
+                            timestamp.value = Date.now();
+                        },10)
+                //console.log("out2:",timeStop)
+            }
+            
         })
-        
+
+        timestamp.addEventListener('focus',()=>{
+            timeStop=true;
+            //console.log("focus:",timeStop)
+        })
+
+        timestamp.addEventListener('blur',()=>{
+            timeStop=false;
+            //console.log("blur:",timeStop)
+        })
 
     </script>
 
