@@ -18,6 +18,7 @@
        type: <input type='text' id='type'>
        timeInForce: <input type="text" id='timeInForce'>
        quantity: <input type='text' id="quantity">
+       quoteOrderQty: <input type='text' id='quoteOrderQty'>
        price: <input type="text" id="price">
        recvWindow: <input type='text' id="recvWindow" value=5000>
        timestamp: <input type="text" id='timestamp'>
@@ -57,6 +58,7 @@
         let type = document.querySelector("#type");
         let timeInForce = document.querySelector("#timeInForce");
         let quantity = document.querySelector('#quantity');
+        let quoteOrderQty = document.querySelector('quoteOrderQty');
         let price = document.querySelector("#price");
         let recvWindow = document.querySelector("#recvWindow");
 
@@ -78,6 +80,7 @@
             data.type = type.value
             data.timeInForce = timeInForce.value
             data.quantity = quantity.value
+            data.quoteOrderQty = quoteOrderQty.value
             data.price = price.value
             data.recvWindow = recvWindow.value
             data.timestamp = timestamp.value
