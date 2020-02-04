@@ -1,0 +1,86 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+    </head>
+    <body>
+        <P>    
+            WSURL: <input type='text' id='wsurl' size=70>
+        </P>
+        <p>
+            <button id='button2'>link</button>
+            <button id='button3'>close</button>
+        </p>
+        <p>
+            DATA: 
+        </p>
+        <P>
+            <textarea id='wsdata' cols=150 rows=20 style='resize:none'></textarea>
+        </P>
+
+    </body>
+    <script type='text/javascript'>
+
+        let wsurl = document.querySelector('#wsurl');
+        let button2 = document.querySelector('#button2');
+        let button3 = document.querySelector('#button3');
+        let wsdata = document.querySelector('#wsdata');
+        let data = {}
+
+        button2.addEventListener('click',()=>{
+            const binancewss = new WebSocket(wsurl.value);
+            
+            let connect = setInterval(
+            ()=>{
+                if(binancewss.readyState === 0){
+                    wsdata.value = wsdata + '正在链接中' + '/n';
+                    }
+                else{
+                    clearInterval(connect);
+                }
+            },1000)
+            
+            
+            //console.log(binancewss.readyState)
+            
+            binancewss.addEventListener('message',event=>{
+                    wsdata.value = wsdata.value + event.data + '\n';
+                })
+            
+            button3.addEventListener('close',event=>{
+                wsdata.value = wsdata.value + '链接断开' + '\n';
+            })
+
+        })
+
+       /*
+        const binancewss = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@miniTicker');
+
+        let connect = setInterval(
+            ()=>{
+                if(binancewss.readyState === 0){
+                    console.log('正在链接中');
+                    }
+                else{
+                    clearInterval(connect);
+                }
+            },1000)
+
+            binancewss.addEventListener('open',event=>{
+                binancewss.send();
+                console.log(binancewss.readyState)
+            })
+
+            binancewss.addEventListener('message',event=>{
+            console.log(event)
+            //wsdata.value = wsdata.value + '\n' + event.data;
+            })
+        */
+        
+        
+
+        
+       
+
+       // let ws= new WebSocket()
+    </script>
+</html>
