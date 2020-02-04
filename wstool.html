@@ -3,6 +3,7 @@
         <meta charset='utf-8'>
     </head>
     <body>
+        <h1>websocket test tool</h1>
         <P>    
             WSURL: <input type='text' id='wsurl' size=70>
         </P>
@@ -24,15 +25,15 @@
         let button2 = document.querySelector('#button2');
         let button3 = document.querySelector('#button3');
         let wsdata = document.querySelector('#wsdata');
-        let data = {}
-
+        let data = {};
+        let i = 0;
         button2.addEventListener('click',()=>{
             const binancewss = new WebSocket(wsurl.value);
             
             let connect = setInterval(
             ()=>{
                 if(binancewss.readyState === 0){
-                    wsdata.value = wsdata + '正在链接中' + '/n';
+                    wsdata.value = wsdata.value + '正在链接中' + '\n' + "……" + '\n';
                     }
                 else{
                     clearInterval(connect);
@@ -45,11 +46,21 @@
             binancewss.addEventListener('message',event=>{
                     wsdata.value = wsdata.value + event.data + '\n';
                 })
-            
-            button3.addEventListener('close',event=>{
-                wsdata.value = wsdata.value + '链接断开' + '\n';
-            })
 
+                //console.log(wsdata.value)
+            button3.addEventListener('click', ()=>{
+                binancewss.close();
+
+                //监听器监听websocket是否完全关闭
+                binancewss.addEventListener('close',()=>{
+                    wsdata.value = wsdata.value + "链接断开" + '\n' ;
+                })
+                //console.log(i++);
+                
+
+                //console.log(wsdata.value)
+               
+            })
         })
 
        /*
