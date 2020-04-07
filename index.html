@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,9 +21,31 @@
        quantity: <input type='text' id="quantity">
        quoteOrderQty: <input type='text' id='quoteOrderQty'>
        price: <input type="text" id="price">
-       recvWindow: <input type='text' id="recvWindow" value=5000>
-       timestamp: <input type="text" id='timestamp'>
+       startTime: <input type="text" id='startTime'>
+       endTime:   <input type="text" id='endTime'>
+       orderId: <input type="text" id='orderId'>
+       origClientOrderId: <input type="text" id='origClientOrderId'>
+
+       email: <input type="text" id="email">
+
+       address: <input type='text' id='address'>
+       amount: <input type= 'text' id="amount">
+
+     
+
     </p>
+
+
+    <p> 
+        define the querystring by users: <br>
+        customized: <input type='text' id='customized' size=150> 
+    </p>
+
+    <p>
+        <input type="checkbox" name="recvWindow" checked="true">recvWindow: <input type='text' id="recvWindow" value=5000>
+        <input type="checkbox" name="timestamp" checked="true">timestamp: <input type="text" id='timestamp'>      
+    </p>
+
     <p>
         secretKey: <input type='text' id="secretKey" size=70>
         signature: <input type='text' id='signature' size=70>
@@ -43,14 +66,13 @@
         
 
         const hmac = forge.hmac.create();
-
+        
+        //url and path
         let baseurl = document.querySelector("#baseurl");
         let path = document.querySelector("#path");
-
         let button1 = document.querySelector('#button1');
 
-        let secretKey = document.querySelector('#secretKey');
-
+        //querystring parameter
         let asset = document.querySelector("#asset");
         let symbol = document.querySelector('#symbol');
 
@@ -60,10 +82,28 @@
         let quantity = document.querySelector('#quantity');
         let quoteOrderQty = document.querySelector('#quoteOrderQty');
         let price = document.querySelector("#price");
-        let recvWindow = document.querySelector("#recvWindow");
+        let startTime = document.querySelector('#startTime');
+        let endTime = document.querySelector('#endTime');
 
+        let orderId = document.querySelector('#orderId');
+        let origClientOrderId = document.querySelector('#origClientOrderId');
+
+        let address = document.querySelector("#address");
+        let amount = document.querySelector("#amount");
+
+        let email = document.querySelector("#email");
+
+        //most querystring needed
+        let recvWindow = document.querySelector("#recvWindow");
         let timestamp = document.querySelector('#timestamp');
 
+        //customized querystring
+        let customized = document.querySelector("#customized");
+
+        //secretKey to generate the signature (HMAC SHA256)
+        let secretKey = document.querySelector('#secretKey');
+
+        //calculation start
         let data = {};
 
         let signature = document.querySelector('#signature');
@@ -74,22 +114,55 @@
         button1.addEventListener('click',()=>{
             hmac.start('sha256',secretKey.value);
 
-            data.asset = asset.value
-            data.symbol = symbol.value
-            data.side = side.value
-            data.type = type.value
-            data.timeInForce = timeInForce.value
-            data.quantity = quantity.value
-            data.quoteOrderQty = quoteOrderQty.value
-            data.price = price.value
-            data.recvWindow = recvWindow.value
-            data.timestamp = timestamp.value
+            data.asset = asset.value;
+            data.symbol = symbol.value;
+            data.side = side.value;
+            data.type = type.value;
+
+            data.timeInForce = timeInForce.value;
+            data.quantity = quantity.value;
+            data.quoteOrderQty = quoteOrderQty.value;
+            data.price = price.value;
+
+            data.startTime = startTime.value;
+            data.endTime = endTime.value;
+
+            data.orderId = orderId.value;
+            data.origClientOrderId = origClientOrderId.value;
+
+            data.address = address.value;
+            data.amount = amount.value;
+
+            data.email = email.value;
+
+
+            if(document.querySelector("[name='recvWindow']").checked)
+                data.recvWindow = recvWindow.value;
+            
+            if(document.querySelector("[name='timestamp']").checked)
+                data.timestamp = timestamp.value;
+            
+
+            //data.customized = customized.value;
 
             let queryparameter = '';
-            for(let parameter in data){
-                if(data[parameter])
-                    queryparameter = queryparameter+parameter+'='+data[parameter]+"&";
+
+            if(customized.value){
+                queryparameter = customized.value + "&";
+
+                for(let parameter in data){
+                    if(data[parameter])
+                        queryparameter = queryparameter+parameter+'='+data[parameter]+"&";
+                }
             }
+
+            else{
+                for(let parameter in data){
+                    if(data[parameter])
+                        queryparameter = queryparameter+parameter+'='+data[parameter]+"&";
+                }
+            }
+            
 
             queryparameter = queryparameter.substr(0,queryparameter.length-1);
             console.log(queryparameter)
@@ -100,6 +173,25 @@
             querystring.value = queryparameter+"&"+"signature="+signature.value;
             URLcommand.value = baseurl.value+path.value+'?'+querystring.value;
         })
+
+
+        let recvWindowName = document.querySelector("[name='recvWindow']");
+            recvWindowName.addEventListener("click",()=>{
+                console.log(recvWindowName.checked)
+                if(recvWindowName.checked)
+                    data.recvWindow = recvWindow.value;
+                else
+                    delete data.recvWindow;
+            })
+                
+        let timestampName = document.querySelector("[name='timestamp']");
+        timestampName.addEventListener("click",()=>{
+                
+                if(timestampName.checked)
+                    data.timestamp = timestamp.value;
+                else 
+                    delete data.timestamp;
+            })
 
 
         let int = setInterval(()=>{
