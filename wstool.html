@@ -5,11 +5,21 @@
     <body>
         <h1>websocket test tool</h1>
         <P>    
-            WSURL: <input type='text' id='wsurl' size=70>
+            WSURL: <input type='text' id='wsurl' size=70 value="wss://stream.binance.com:9443/stream">
         </P>
         <p>
             <button id='button2'>link</button>
             <button id='button3'>close</button>
+        </p>
+        <p>
+            message:
+            
+        </p>
+        <p>
+            <textarea id='message' cols=100 rows=5 style='resize:none' value='{"method": "SUBSCRIBE","params":["btcusdt@aggTrade","btcusdt@depth"],"id": 1}'></textarea>
+        </p>
+        <p>
+            <button id="send1">send</button>
         </p>
         <p>
             DATA: 
@@ -24,6 +34,8 @@
         let wsurl = document.querySelector('#wsurl');
         let button2 = document.querySelector('#button2');
         let button3 = document.querySelector('#button3');
+        let send1 = document.querySelector('#send1');
+        let message= document.querySelector('#message');
         let wsdata = document.querySelector('#wsdata');
         let data = {};
         let i = 0;
@@ -34,23 +46,38 @@
             ()=>{
                 if(binancewss.readyState === 0){
                     wsdata.value = wsdata.value + '正在链接中' + '\n' + "……" + '\n';
+                    console.log(binancewss.readyState)
                     }
                 else{
                     clearInterval(connect);
+                    console.log(binancewss.readyState)
                 }
             },1000)
             
             
             //console.log(binancewss.readyState)
+            binancewss.addEventListener('open',event=>{
+                console.log(binancewss.readyState)
+            })
             
             binancewss.addEventListener('message',event=>{
                     wsdata.value = wsdata.value + event.data + '\n';
+                    //console.log(wsdata.value)
                 })
+            
+            //wa = JSON.stringify(message.value);
+            //console.log(wa)
+            send1.addEventListener('click',()=>{
+                console.log(message.value)
+                wa = JSON.parse(message.value);
+                wa = JSON.stringify(wa);
+                console.log(wa)
+                binancewss.send(wa);
+            })
 
-                //console.log(wsdata.value)
             button3.addEventListener('click', ()=>{
+                
                 binancewss.close();
-
                 //监听器监听websocket是否完全关闭
                 binancewss.addEventListener('close',()=>{
                     wsdata.value = wsdata.value + "链接断开" + '\n' ;
