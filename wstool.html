@@ -1,3 +1,4 @@
+
 <html>
     <head>
         <meta charset='utf-8'>
@@ -44,28 +45,52 @@
         button2.addEventListener('click',()=>{
             const binancewss = new WebSocket(wsurl.value);
             
-            let connect = setInterval(
-            ()=>{
-                if(binancewss.readyState === 0){
-                    wsdata.value = wsdata.value + '正在链接中' + '\n' + "……" + '\n';
-                    console.log(binancewss.readyState)
-                    }
-                else{
-                    clearInterval(connect);
-                    console.log(binancewss.readyState)
-                }
-            },1000)
+            //let connect = setInterval(
+            //()=>{
+            switch(binancewss.readyState){
+                case 0:  
+                    wsdata.value = wsdata.value + 'linking' + '\n' + "……" + '\n';
+                    console.log(binancewss.readyState);
+                    console.log("Socket has been created. The connection is not yet open.");
+                    break;
+
+                case 1:
+                //clearInterval(connect);
+                    console.log(binancewss.readyState);
+                    console.log("The connection is open and ready to communicate.");
+                    break;
+
+                case 2:
+                    console.log(binancewss.readyState);
+                    console.log("The connection is in the process of closing.");
+                    break;
+
+                case 3:
+                    console.log(binancewss.readyState);
+                    console.log("The connection is closed or couldn't be opened.");
+                    break;
+            }
+            //},1000)
             
             
             //console.log(binancewss.readyState)
             binancewss.addEventListener('open',event=>{
-                console.log(binancewss.readyState)
+                wsdata.value = wsdata.value + 'linked' + '\n' + "……" + '\n';
+                console.log(binancewss.readyState);
+                console.log("The connection is open and ready to communicate.");
+            })
+
+            binancewss.addEventListener('close',event=>{
+                wsdata.value = wsdata.value + 'closed' + '\n' + "……" + '\n';
+                console.log(binancewss.readyState);
+                console.log("The connection is closed or couldn't be opened.");
             })
             
             binancewss.addEventListener('message',event=>{
                     wsdata.value = wsdata.value + event.data + '\n';
                     //console.log(wsdata.value)
                 })
+            
             
             //wa = JSON.stringify(message.value);
             //console.log(wa)
@@ -80,10 +105,17 @@
             button3.addEventListener('click', ()=>{
                 
                 binancewss.close();
+                wsdata.value = wsdata.value + 'closing' + '\n' + "……" + '\n';
+                console.log(binancewss.readyState);
+                console.log("The connection is in the process of closing.");
                 //监听器监听websocket是否完全关闭
+                /*
                 binancewss.addEventListener('close',()=>{
                     wsdata.value = wsdata.value + "链接断开" + '\n' ;
+                    console.log(binancewss.readyState);
+                    console.log("The connection is closed or couldn't be opened.");
                 })
+                */
                 //console.log(i++);
                 
 
