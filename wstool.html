@@ -89,6 +89,9 @@
             binancewss.addEventListener('message',event=>{
                     wsdata.value = wsdata.value + event.data + '\n';
                     //console.log(wsdata.value)
+
+                    //自动滚动到最后一行
+                    wsdata.scrollTop = wsdata.scrollHeight;
                 })
             
             
@@ -104,10 +107,15 @@
 
             button3.addEventListener('click', ()=>{
                 
-                binancewss.close();
-                wsdata.value = wsdata.value + 'closing' + '\n' + "……" + '\n';
-                console.log(binancewss.readyState);
-                console.log("The connection is in the process of closing.");
+                if(binancewss.readyState !== 3){
+                    binancewss.close();
+                }
+
+                if(binancewss.readyState === 2){
+                    wsdata.value = wsdata.value + 'closing' + '\n' + "……" + '\n';
+                    console.log(binancewss.readyState);
+                    console.log("The connection is in the process of closing.");
+                }
                 //监听器监听websocket是否完全关闭
                 /*
                 binancewss.addEventListener('close',()=>{
@@ -149,10 +157,13 @@
         */
         
         
-
+            
         
        
 
        // let ws= new WebSocket()
+    </script>
+    <script type='text/javascript'>
+        
     </script>
 </html>
