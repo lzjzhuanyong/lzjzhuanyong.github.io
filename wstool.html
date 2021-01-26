@@ -2,6 +2,25 @@
 <html>
     <head>
         <meta charset='utf-8'>
+        <style>
+            body
+            {
+               /*background-color: #e0e0e0; */
+            }
+            #output 
+            {
+                width:1000px;
+                padding:2px;
+                border:2px solid #afaeb0;
+                margin:1px;
+                height:250px;
+                overflow:auto;
+            }
+            p.px480
+            {
+                width:480px;
+            }
+        </style>
     </head>
     <body>
         <h1>websocket test tool</h1>
@@ -28,7 +47,16 @@
             DATA: 
         </p>
         <P>
-            <textarea id='wsdata' cols=150 rows=20 style='resize:none'></textarea>
+            <style>
+                .bubble{
+                    word-wrap: break-word;
+                }
+            </style>
+            <div id="output">
+              
+                
+            </div>
+            <!--<textarea id='wsdata' cols=150 rows=20 style='resize:none'></textarea>-->
         </P>
 
     </body>
@@ -39,7 +67,8 @@
         let button3 = document.querySelector('#button3');
         let send1 = document.querySelector('#send1');
         let message= document.querySelector('#message');
-        let wsdata = document.querySelector('#wsdata');
+        //let wsdata = document.querySelector('#wsdata');
+        let output = document.querySelector("#output");
         let data = {};
         let i = 0;
         button2.addEventListener('click',()=>{
@@ -49,7 +78,10 @@
             //()=>{
             switch(binancewss.readyState){
                 case 0:  
-                    wsdata.value = wsdata.value + 'linking' + '\n' + "……" + '\n';
+                    //wsdata.value = wsdata.value + 'linking' + '\n' + "……" + '\n';
+
+                    insertMessage("linking……");
+
                     console.log(binancewss.readyState);
                     console.log("Socket has been created. The connection is not yet open.");
                     break;
@@ -75,23 +107,32 @@
             
             //console.log(binancewss.readyState)
             binancewss.addEventListener('open',event=>{
-                wsdata.value = wsdata.value + 'linked' + '\n' + "……" + '\n';
+                //wsdata.value = wsdata.value + 'linked' + '\n' + "……" + '\n';
+
+                insertMessage("linked……");
+
                 console.log(binancewss.readyState);
                 console.log("The connection is open and ready to communicate.");
             })
 
             binancewss.addEventListener('close',event=>{
-                wsdata.value = wsdata.value + 'closed' + '\n' + "……" + '\n';
+                //wsdata.value = wsdata.value + 'closed' + '\n' + "……" + '\n';
+
+                insertMessage("closed……");
                 console.log(binancewss.readyState);
                 console.log("The connection is closed or couldn't be opened.");
             })
             
             binancewss.addEventListener('message',event=>{
-                    wsdata.value = wsdata.value + event.data + '\n';
+                    //console.log(typeof event);
+                    //console.log(event)
+                    let text = JSON.stringify(event.data);
+                    insertMessage(event.data);
                     //console.log(wsdata.value)
 
                     //自动滚动到最后一行
-                    wsdata.scrollTop = wsdata.scrollHeight;
+                    output.scrollTop = output.scrollHeight;
+                    console.log(output.scrollHeight)
                 })
             
             
@@ -112,7 +153,8 @@
                 }
 
                 if(binancewss.readyState === 2){
-                    wsdata.value = wsdata.value + 'closing' + '\n' + "……" + '\n';
+                    //wsdata.value = wsdata.value + 'closing' + '\n' + "……" + '\n';
+                    insertMessage("closing……");
                     console.log(binancewss.readyState);
                     console.log("The connection is in the process of closing.");
                 }
@@ -130,6 +172,16 @@
                 //console.log(wsdata.value)
                
             })
+
+            function insertMessage(text){
+                let paragraph = document.createElement('p');
+                
+                paragraph.setAttribute("class","bubble");
+                let mes = document.createTextNode(text);
+
+                paragraph.appendChild(mes);
+                output.appendChild(paragraph);
+            }
         })
 
        /*
