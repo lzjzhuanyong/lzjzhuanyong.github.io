@@ -1,4 +1,3 @@
-
 <html>
     <head>
         <meta charset='utf-8'>
@@ -21,15 +20,17 @@
                 width:480px;
             }
         </style>
+
+        <script src="pako.min.js"></script>
     </head>
     <body>
         <h1>websocket test tool</h1>
         <P>    
-            WSURL: <input type='text' id='wsurl' size=70 value="wss://stream.binance.com:9443/stream">
+            WSURL: <input type='text' id='wsurl' size=70 value="wss://sfstream.binance.com/stream">
         </P>
         <p>
-            <button id='button2'>link</button>
-            <button id='button3'>close</button>
+            <button id='button_link'>link</button>
+            <button id='button_close'>close</button>
         </p>
         <p>
             message:
@@ -37,14 +38,14 @@
         </p>
         <p>
             <textarea id='message' cols=100 rows=5 style='resize:none'>
-                {"method": "SUBSCRIBE","params":["btcusdt@aggTrade","btcusdt@depth"],"id": 1}
+                {"method": "SUBSCRIBE","params":["btcusdt@aggSnap","!contractInfo","!miniTicker@arr","btcusdt@markPrice","!markPriceMini@arr","btcusdt@depth@500ms","btcusdt_perpetual@continuousKline_1d"],"id": 1}
             </textarea>
         </p>
         <p>
-            <button id="send1">send</button>
+            <button id="button_send">send</button>
         </p>
         <p>
-            DATA: 
+            DATA: <button id="button_ungzip" title="For unziping gzip data">unzip</button>
         </p>
         <P>
             <style>
@@ -60,18 +61,24 @@
         </P>
 
     </body>
+
     <script type='text/javascript'>
 
         let wsurl = document.querySelector('#wsurl');
-        let button2 = document.querySelector('#button2');
-        let button3 = document.querySelector('#button3');
-        let send1 = document.querySelector('#send1');
+        let button_link = document.querySelector('#button_link');
+        let button_close = document.querySelector('#button_close');
+        let button_send = document.querySelector('#button_send');
         let message= document.querySelector('#message');
         //let wsdata = document.querySelector('#wsdata');
         let output = document.querySelector("#output");
-        let data = {};
-        let i = 0;
-        button2.addEventListener('click',()=>{
+
+        let button_ungzip = document.querySelector("#button_ungzip");
+        let raw = true;
+        //let data = {};
+        //let i = 0;
+
+
+        button_link.addEventListener('click',()=>{
             const binancewss = new WebSocket(wsurl.value);
             
             //let connect = setInterval(
@@ -80,7 +87,7 @@
                 case 0:  
                     //wsdata.value = wsdata.value + 'linking' + '\n' + "……" + '\n';
 
-                    insertMessage("linking……");
+                    insertMessage(Date.now(),"linking……");
 
                     console.log(binancewss.readyState);
                     console.log("Socket has been created. The connection is not yet open.");
@@ -109,7 +116,7 @@
             binancewss.addEventListener('open',event=>{
                 //wsdata.value = wsdata.value + 'linked' + '\n' + "……" + '\n';
 
-                insertMessage("linked……");
+                insertMessage(Date.now(),"linked……");
 
                 console.log(binancewss.readyState);
                 console.log("The connection is open and ready to communicate.");
@@ -118,17 +125,43 @@
             binancewss.addEventListener('close',event=>{
                 //wsdata.value = wsdata.value + 'closed' + '\n' + "……" + '\n';
 
-                insertMessage("closed……");
+                insertMessage(Date.now(),"closed……");
                 console.log(binancewss.readyState);
                 console.log("The connection is closed or couldn't be opened.");
             })
             
             binancewss.addEventListener('message',event=>{
-                    //console.log(typeof event);
+                    //console.log(typeof event.data);
                     //console.log(event)
+
+                    let ifDataIsBlob = event.data instanceof Blob;
+                    console.log(ifDataIsBlob);
+                    //console.log(event.data instanceof Blob);
                     let text = JSON.stringify(event.data);
-                    insertMessage(event.data);
-                    //console.log(wsdata.value)
+                    switch(raw){
+                        case true:
+                            insertMessage(Date.now(),event.data);
+                            break;
+                        case false:
+                            if(ifDataIsBlob){
+                                let a = unzip(event.data);
+                                console.log(a);
+                            }
+                            else{
+                                insertMessage(Date.now(),"no need to unzip the data!");
+                                insertMessage(Date.now(),event.data);
+                                
+                                raw = true;
+                                button_ungzip.innerHTML = "unzip";
+                            }
+                            break;
+                    }
+                    
+                    
+                    //console.log(event.data)
+                    
+
+                    //console.log(text)
 
                     //自动滚动到最后一行
                     output.scrollTop = output.scrollHeight;
@@ -138,7 +171,7 @@
             
             //wa = JSON.stringify(message.value);
             //console.log(wa)
-            send1.addEventListener('click',()=>{
+            button_send.addEventListener('click',()=>{
                 console.log(message.value)
                 wa = JSON.parse(message.value);
                 wa = JSON.stringify(wa);
@@ -146,7 +179,7 @@
                 binancewss.send(wa);
             })
 
-            button3.addEventListener('click', ()=>{
+            button_close.addEventListener('click', ()=>{
                 
                 if(binancewss.readyState !== 3){
                     binancewss.close();
@@ -154,7 +187,7 @@
 
                 if(binancewss.readyState === 2){
                     //wsdata.value = wsdata.value + 'closing' + '\n' + "……" + '\n';
-                    insertMessage("closing……");
+                    insertMessage(Date.now(),"closing……");
                     console.log(binancewss.readyState);
                     console.log("The connection is in the process of closing.");
                 }
@@ -173,20 +206,22 @@
                
             })
 
-            function insertMessage(text){
-                let paragraph = document.createElement('p');
-                
-                paragraph.setAttribute("class","bubble");
-                let mes = document.createTextNode(text);
+            
+        })
 
-                paragraph.appendChild(mes);
-                output.appendChild(paragraph);
+        button_ungzip.addEventListener('click',()=>{
+            if(raw){
+                raw = false;
+                button_ungzip.innerHTML = "zip";
+            }
+            else{
+                raw = true;
+                button_ungzip.innerHTML = "unzip";
             }
         })
 
        /*
         const binancewss = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@miniTicker');
-
         let connect = setInterval(
             ()=>{
                 if(binancewss.readyState === 0){
@@ -196,12 +231,10 @@
                     clearInterval(connect);
                 }
             },1000)
-
             binancewss.addEventListener('open',event=>{
                 binancewss.send();
                 console.log(binancewss.readyState)
             })
-
             binancewss.addEventListener('message',event=>{
             console.log(event)
             //wsdata.value = wsdata.value + '\n' + event.data;
@@ -216,6 +249,36 @@
        // let ws= new WebSocket()
     </script>
     <script type='text/javascript'>
+
+        function insertMessage(...args){
+
+                //console.log(args);
+                let text = "";
+                for(let val of args){
+                    text += val + " ";
+                }
+
+                let paragraph = document.createElement('p');
+                
+                paragraph.setAttribute("class","bubble");
+                let message = document.createTextNode(text);
+
+                paragraph.appendChild(message);
+                output.appendChild(paragraph);
+            }
+
         
+        function unzip(data){
+            let reader = new FileReader();
+            reader.readAsArrayBuffer(data);
+            reader.addEventListener("loadend", function() {
+                //console.log(reader.result);
+                let result = pako.ungzip(reader.result,{to:'string'});
+                //console.log(result);
+                insertMessage(Date.now(),result);
+                // reader.result 包含被转化为类型数组 typed array 的 blob
+            });
+            
+        }
     </script>
 </html>
