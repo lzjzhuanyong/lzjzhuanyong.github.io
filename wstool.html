@@ -26,7 +26,7 @@
     <body>
         <h1>websocket test tool</h1>
         <P>    
-            WSURL: <input type='text' id='wsurl' size=70 value="wss://sfstream.binance.com/stream">
+            WSURL: <input type='text' id='wsurl' size=70 value="wss://stream.binance.com:9443/stream">
         </P>
         <p>
             <button id='button_link'>link</button>
@@ -38,7 +38,7 @@
         </p>
         <p>
             <textarea id='message' cols=100 rows=5 style='resize:none'>
-                {"method": "SUBSCRIBE","params":["btcusdt@aggSnap","!contractInfo","!miniTicker@arr","btcusdt@markPrice","!markPriceMini@arr","btcusdt@depth@500ms","btcusdt_perpetual@continuousKline_1d"],"id": 1}
+                {"method": "SUBSCRIBE","params":["btcusdt@aggTrade","btcusdt@depth"],"id": 1}
             </textarea>
         </p>
         <p>
