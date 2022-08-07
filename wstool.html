@@ -21,7 +21,7 @@
             }
         </style>
 
-        <script src="pako.min.js"></script>
+       <!-- <script src="pako.min.js"></script> -->
     </head>
     <body>
         <h1>websocket test tool</h1>
@@ -135,7 +135,7 @@
                     //console.log(event)
 
                     let ifDataIsBlob = event.data instanceof Blob;
-                    console.log(ifDataIsBlob);
+                    //console.log(ifDataIsBlob);
                     //console.log(event.data instanceof Blob);
                     let text = JSON.stringify(event.data);
                     switch(raw){
@@ -145,7 +145,7 @@
                         case false:
                             if(ifDataIsBlob){
                                 let a = unzip(event.data);
-                                console.log(a);
+                                //console.log(a);
                             }
                             else{
                                 insertMessage(Date.now(),"no need to unzip the data!");
@@ -269,6 +269,13 @@
 
         
         function unzip(data){
+            
+            data.text().then(function(resolve,reject){
+                let result = resolve;
+                //console.log(typeof(result));
+                insertMessage(Date.now(),result);
+            })
+            /*
             let reader = new FileReader();
             reader.readAsArrayBuffer(data);
             reader.addEventListener("loadend", function() {
@@ -278,7 +285,7 @@
                 insertMessage(Date.now(),result);
                 // reader.result 包含被转化为类型数组 typed array 的 blob
             });
-            
+            */
         }
     </script>
 </html>
