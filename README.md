@@ -8,3 +8,5 @@ signature tool for work
 ~~[wstool.html](https://lzjzhuanyong.github.io/wstool.html) uses [pako.js](https://github.com/nodeca/pako) as the module to decompress the gzip data.~~
 
 [wstool.html](https://lzjzhuanyong.github.io/wstool.html) no longer uses "pako.js" to do decompression
+
+new page style of the wstool
