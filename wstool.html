@@ -7,16 +7,21 @@
             div#root {display:flex; background-color: white; height: 100%;}
             aside.left {width: 31%;}
             main.right {width: 69%;}
-            input#wsurl {width: 90%; padding: 12px 8px; margin: 16px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
-            input#wsurl:hover {border: 1px solid #ccc; outline: 2px solid lightgrey}
-            input#wsurl:focus {border: 1px solid #ccc; outline: 2px solid lightgrey}
+            
+            input#wsurl {width: 90%; padding: 12px 8px; margin: 16px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            input#wsurl:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            input#wsurl:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            
             lable {margin: 0px 8px}
-            textarea#message {width: 90%; height:20%; padding: 12px 8px; margin: 16px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none;}
-            textarea#message:hover {border: 1px solid #ccc; outline: 2px solid lightgrey}
-            textarea#message:focus {border: 1px solid #ccc; outline: 2px solid lightgrey}
-            button.button {width: 20%; height: 5%; padding: 5px 10px; margin: 1px 8px; display:inline-block; border: none; border-radius: 4px; cursor: pointer; background-color: lightgrey;}
-            button.button:hover {background-color: #B8B8B8;}
-            button.button:active {outline:3px ridge #B8B8B8;}
+            
+            textarea#message {width: 90%; height:20%; padding: 12px 8px; margin: 16px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+            textarea#message:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+            textarea#message:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+            
+            button.button {width: 20%; height: 5%; padding: 5px 10px; margin: 1px 8px; display:inline-block; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+            button.button:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+            button.button:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
+            
             h3.left-h3 {margin:16px 8px;}
             h3.right-h3 {margin:8px 0px;}
             hr.cuttingline {border: 1px solid lightgrey; width:95%;}
