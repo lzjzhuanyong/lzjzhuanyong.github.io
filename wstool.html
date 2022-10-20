@@ -8,7 +8,7 @@
             aside.left {width: 31%;}
             main.right {width: 69%;}
             
-            input#wsurl {width: 90%; padding: 12px 8px; margin: 16px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            input#wsurl {width: 90%; padding: 12px 8px; margin: 16px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
             input#wsurl:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
             input#wsurl:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
             
@@ -18,7 +18,7 @@
             textarea#message:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
             textarea#message:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
             
-            button.button {width: 20%; height: 5%; padding: 5px 10px; margin: 1px 8px; display:inline-block; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+            button.button {width: 20%; height: 5%; padding: 5px 10px; margin: 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
             button.button:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
             button.button:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
             
@@ -26,6 +26,10 @@
             h3.right-h3 {margin:8px 0px;}
             hr.cuttingline {border: 1px solid lightgrey; width:95%;}
             h3.optional {margin:8px 8px;}
+            
+            datalist {position: absolute; margin: 0px 0px 0px 8px; width: 27.6%; background-color: white; border: 1px solid #ccc; border-radius: 0px 0px 4px 4px; border-top: none; font-family: sans-serif; padding: 5px; max-height: 10rem; overflow-y: auto; box-sizing: border-box; box-shadow: 0px 0px 0px 2px lightgrey;}
+            option {background-color: white; padding: 4px; margin-bottom: 1px; font-size: 15px; cursor: pointer;}
+            option:hover,  .active{background-color: lightblue;}
         </style>
     </head>
     <body>
@@ -39,7 +43,14 @@
                             <lable for="wsurl">WSURL:</lable>
                         </div>
                         <div>
-                            <input type='text' id='wsurl' value="wss://stream.binance.com:9443/stream">
+                            <input type='text' id="wsurl" value="wss://stream.binance.com:9443/stream" autocomplete="off">
+                            <datalist id="urlList" class="datalist">
+                                <option value="spot mainnet:wss://stream.binance.com:9443/stream">spot mainnet: wss://stream.binance.com:9443/stream</option>
+                                <option value="spot testnet:wss://testnet.binance.vision/stream">spot testnet: wss://testnet.binance.vision/stream</option>
+                                <option value="UM-futures mainnet:wss://fstream.binance.com/stream">UM-futures mainnet: wss://fstream.binance.com/stream</option>
+                                <option value="CM-futures mainnet:wss://dstream.binance.com/stream">CM-futures mainnet: wss://dstream.binance.com/stream</option>
+                                <option value="futures testnet:wss://stream.binancefuture.com/stream">futures testnet: wss://stream.binancefuture.com</option>
+                            </datalist>
                         </div>
                             
                         <div>
@@ -308,6 +319,93 @@
                 // reader.result 包含被转化为类型数组 typed array 的 blob
             });
             */
+        }
+    </script>
+    <script type="text/javascript" id="input#wsurl_datalist_function">
+
+        for (let option of urlList.options) {
+            option.onmousedown = function () {
+                //console.log("option click"); 
+
+                wsurl.value = option.value.slice(option.value.indexOf(":")+1);
+                urlList.style.display = 'none';
+                wsurl.style.borderRadius = "4px";
+            }
+        };
+
+        wsurl.onfocus = function () {
+            urlList.style.display = 'block';
+            wsurl.style.borderRadius = "4px 4px 0 0";  
+            for(let option of urlList.options){
+                option.style.display = "block";
+            }
+        };
+
+        wsurl.oninput = function() {
+            let text = wsurl.value.toUpperCase();
+            for (let option of urlList.options) {
+                if(option.value.toUpperCase().indexOf(text) > -1){
+                    option.style.display = "block";
+                }
+                else{
+                    option.style.display = "none";
+                }
+            };
+        }
+
+        let currentFocus = -1;
+        wsurl.onkeydown = function(e) {
+            //console.log(urlList.options)
+            let list = [];
+            for(let option of urlList.options){
+                if(option.style.display !== "none"){
+                    list.push(option);
+                }
+            }
+            //console.log(list)
+            if(e.keyCode == 40){
+                currentFocus++
+                addActive(list);
+            }
+            else if(e.keyCode == 38){
+                currentFocus--
+                addActive(list);
+            }
+            else if(e.keyCode == 13){
+                e.preventDefault();
+                if (currentFocus > -1) {
+                /*and simulate a click on the "active" item:*/
+                    if (urlList.options) {
+                        wsurl.value = list[currentFocus].value.slice(list[currentFocus].value.indexOf(":")+1);
+                        wsurl.blur();
+                        currentFocus = -1;
+                        removeActive(urlList.options);
+                    }
+                }
+                else{
+                    wsurl.blur();
+                }
+            }
+        }
+
+        wsurl.onblur = function(){
+            //console.log("blur");
+            urlList.style.display = "none";
+            wsurl.style.borderRadius = "4px";
+        }
+
+        function addActive(x) {
+            if (!x) return false;
+            removeActive(x);
+            if (currentFocus >= x.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (x.length - 1);
+            x[currentFocus].classList.add("active");
+        }
+        
+        function removeActive(x) {
+            for (let i = 0; i < x.length; i++) {
+                x[i].classList.remove("active");
+            }
         }
     </script>
 </html>
