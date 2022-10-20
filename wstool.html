@@ -24,12 +24,16 @@
             
             h3.left-h3 {margin:16px 8px;}
             h3.right-h3 {margin:8px 0px;}
-            hr.cuttingline {border: 1px solid lightgrey; width:95%;}
+            hr.cuttingline {border: 1px solid lightgrey; width:95%; background-color: lightgrey;}
             h3.optional {margin:8px 8px;}
             
             datalist {position: absolute; margin: 0px 0px 0px 8px; width: 27.6%; background-color: white; border: 1px solid #ccc; border-radius: 0px 0px 4px 4px; border-top: none; font-family: sans-serif; padding: 5px; max-height: 10rem; overflow-y: auto; box-sizing: border-box; box-shadow: 0px 0px 0px 2px lightgrey;}
             option {background-color: white; padding: 4px; margin-bottom: 1px; font-size: 15px; cursor: pointer;}
             option:hover,  .active{background-color: lightblue;}
+            
+            input#datenow {margin: 8px 0px 0px 8px}
+            input#hidedata {margin: 8px 0px 0px 8px}
+            input#binary2text {margin: 8px 0px 0px 8px}
         </style>
     </head>
     <body>
@@ -78,7 +82,15 @@
                 <hr class="cuttingline"></hr>
                 <div class="optional">
                     <h3 class="optional">Optional:</h3>
-                    <button id="button_ungzip" title="For unziping gzip data">unzip</button>
+                    <div> 
+                        <input id="datenow" type="checkbox"> show data receving time
+                    </div>
+                    <div>
+                        <input id="hidedata" type="checkbox"> hide the pushing data
+                    </div>
+                    <div>
+                        <input id="binary2text" type="checkbox"> convert binary data to text data
+                    </div>
                 </div>
             </aside>
             <main class="right">
@@ -97,7 +109,7 @@
 
     <script type='text/javascript' id="main_function">
 
-        let wsurl = document.querySelector('#wsurl');
+        let wsurl = document.querySelector('input#wsurl');
         let button_link = document.querySelector('#button_link');
         let button_close = document.querySelector('#button_close');
         let button_send = document.querySelector('#button_send');
@@ -105,12 +117,12 @@
         //let wsdata = document.querySelector('#wsdata');
         let output = document.querySelector("#output");
 
-        let button_ungzip = document.querySelector("#button_ungzip");
-        let raw = true;
+        let binary2text = document.querySelector("#binary2text");
+        let hidedata = document.querySelector("#hidedata");
         //let data = {};
         //let i = 0;
-
-
+        
+        let hasConnection = false;
         button_link.addEventListener('click',()=>{
             const binancewss = new WebSocket(wsurl.value);
             
@@ -120,7 +132,7 @@
                 case 0:  
                     //wsdata.value = wsdata.value + 'linking' + '\n' + "……" + '\n';
 
-                    insertMessage(Date.now(),"linking……");
+                    insertMessage("linking……");
 
                     console.log(binancewss.readyState);
                     console.log("Socket has been created. The connection is not yet open.");
@@ -149,58 +161,58 @@
             binancewss.addEventListener('open',event=>{
                 //wsdata.value = wsdata.value + 'linked' + '\n' + "……" + '\n';
 
-                insertMessage(Date.now(),"linked……");
+                insertMessage("linked……");
 
                 console.log(binancewss.readyState);
                 console.log("The connection is open and ready to communicate.");
             })
-
-            binancewss.addEventListener('close',event=>{
-                //wsdata.value = wsdata.value + 'closed' + '\n' + "……" + '\n';
-
-                insertMessage(Date.now(),"closed……");
-                console.log(binancewss.readyState);
-                console.log("The connection is closed or couldn't be opened.");
-            })
             
-            binancewss.addEventListener('message',event=>{
-                    //console.log(typeof event.data);
-                    //console.log(event)
-
-                    let ifDataIsBlob = event.data instanceof Blob;
+            binancewss.addEventListener('message',messageEvent=>{
+                //console.log(typeof event.data);
+                //console.log(event)
+                
+                if(!hidedata.checked || ("result" in JSON.parse(messageEvent.data))){
+                    let ifDataIsBlob = messageEvent.data instanceof Blob;
                     //console.log(ifDataIsBlob);
                     //console.log(event.data instanceof Blob);
-                    let text = JSON.stringify(event.data);
-                    switch(raw){
-                        case true:
-                            insertMessage(Date.now(),event.data);
-                            break;
-                        case false:
-                            if(ifDataIsBlob){
-                                let a = unzip(event.data);
+                    //let text = JSON.stringify(event.data);
+                    if(binary2text.checked){
+                        if(ifDataIsBlob){
+                                let a = unzip(messageEvent.data);
                                 //console.log(a);
                             }
                             else{
-                                insertMessage(Date.now(),"no need to unzip the data!");
-                                insertMessage(Date.now(),event.data);
+                                insertMessage("no need to convert the format of data!");
+                                insertMessage(messageEvent.data);
                                 
-                                raw = true;
-                                button_ungzip.innerHTML = "unzip";
+                                binary2text.checked = false;
                             }
-                            break;
                     }
-                    
-                    
-                    //console.log(event.data)
-                    
+                    else{
+                        insertMessage(messageEvent.data);
+                    }
+                }
 
-                    //console.log(text)
+                //console.log(event.data)
+                
+                //console.log(text)
 
-                    //自动滚动到最后一行
-                    output.scrollTop = output.scrollHeight;
-                    console.log(output.scrollHeight)
-                })
+                //自动滚动到最后一行
+                output.scrollTop = output.scrollHeight;
+                console.log(output.scrollHeight)
+            })
             
+            binancewss.addEventListener('close',closeEvent=>{
+                //wsdata.value = wsdata.value + 'closed' + '\n' + "……" + '\n';
+
+                insertMessage("closed……");
+                console.log(binancewss.readyState,closeEvent.code);
+                console.log("The connection is closed or couldn't be opened.");
+            })
+
+            binancewss.addEventListener("error",errorEvent=>{
+                console.log(errorEvent);
+            })
             
             //wa = JSON.stringify(message.value);
             //console.log(wa)
@@ -220,7 +232,7 @@
 
                 if(binancewss.readyState === 2){
                     //wsdata.value = wsdata.value + 'closing' + '\n' + "……" + '\n';
-                    insertMessage(Date.now(),"closing……");
+                    insertMessage("closing……");
                     console.log(binancewss.readyState);
                     console.log("The connection is in the process of closing.");
                 }
@@ -238,21 +250,25 @@
                 //console.log(wsdata.value)
                
             })
-
-            
+ 
         })
 
-        button_ungzip.addEventListener('click',()=>{
-            if(raw){
-                raw = false;
-                button_ungzip.innerHTML = "zip";
-            }
-            else{
-                raw = true;
-                button_ungzip.innerHTML = "unzip";
-            }
-        })
+        
+        // {
+        //     button_ungzip.addEventListener('click',()=>{
+        //     if(raw){
+        //         raw = false;
+        //         button_ungzip.innerHTML = "zip";
+        //     }
+        //     else{
+        //         raw = true;
+        //         button_ungzip.innerHTML = "unzip";
+        //     }
+        // })
+        // }
 
+        
+        
        /*
         const binancewss = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@miniTicker');
         let connect = setInterval(
@@ -274,31 +290,37 @@
             })
         */
         
-        
-            
-        
-       
-
        // let ws= new WebSocket()
     </script>
+
     <script type='text/javascript' id="showMessage_function">
+
+        let datenow = document.querySelector("#datenow")
 
         function insertMessage(...args){
 
-                //console.log(args);
-                let text = "";
+            let time = Date.now()
+            let text = "";
+            if(datenow.checked){
                 for(let val of args){
                     text += val + " ";
                 }
-
-                let paragraph = document.createElement('p');
-                
-                paragraph.setAttribute("class","bubble");
-                let message = document.createTextNode(text);
-
-                paragraph.appendChild(message);
-                output.appendChild(paragraph);
+                text = time + " " + text;
             }
+            else{
+                for(let val of args){
+                    text += val + " ";
+                }
+            }
+            
+            let paragraph = document.createElement('p');
+            
+            paragraph.setAttribute("class","bubble");
+            let message = document.createTextNode(text);
+
+            paragraph.appendChild(message);
+            output.appendChild(paragraph);
+        }
 
         
         function unzip(data){
@@ -306,7 +328,7 @@
             data.text().then(function(resolve,reject){
                 let result = resolve;
                 //console.log(typeof(result));
-                insertMessage(Date.now(),result);
+                insertMessage(result);
             })
             /*
             let reader = new FileReader();
@@ -321,6 +343,7 @@
             */
         }
     </script>
+
     <script type="text/javascript" id="input#wsurl_datalist_function">
 
         for (let option of urlList.options) {
