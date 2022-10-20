@@ -11,4 +11,4 @@ signature tool for work
 
 2022-10-14 update: new page style of the wstool
 
-2022-10-20 update: datalist of input label for url quick choosing
+2022-10-20 update: datalist of input label for url quick choosing, and add new optional functions for more composability
