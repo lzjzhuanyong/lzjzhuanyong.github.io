@@ -301,16 +301,12 @@
 
             let time = Date.now()
             let text = "";
-            if(datenow.checked){
-                for(let val of args){
-                    text += val + " ";
-                }
-                text = time + " " + text;
+            for(let val of args){
+                text += val + " ";
             }
-            else{
-                for(let val of args){
-                    text += val + " ";
-                }
+
+            if(datenow.checked){
+                text = time + " " + text;
             }
             
             let paragraph = document.createElement('p');
