@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"> 
+    <style>
+        html,body {height: 100%;}
+        div#root {background-color: white; height: 100%; width:100%;}
+        div.header {display:flex; height: 12%; width: 100%; border: 2px solid red}
+        div.main {display:flex; width: 100%;height: 80%; border: 2px solid red}
+        div.left {width:45%;border: 2px solid red}
+        div.right {width:45%;border:2px solid red}
+        div.middle {width:10%;}
+        
+        textarea#privateKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        textarea#publicKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        
+        div.button_transform {top: 50%; border: 2px solid red}
+    
+    </style>
+    <script src="forge.min.js"></script>
+    <title>RSA Key Generator Tool</title>
+</head>
+<body>
+    <div id="root">
+        <div class="header">
+            <div>
+                <select id="selection">
+                    <option value="2048">2048 bits</option>
+                    <option value="4096">4096 bits</option>
+                </select>
+            </div>
+            <div>
+                <button id='button_generator' class="button" type="button">generate</button>
+            </div>
+        </div>
+        <div class="main">
+            <div class="left">
+                <textarea id='privateKeyPem'> </textarea>
+            </div>
+            <div class="middle">
+                <div class="button_transform">prvKey to pubKey</div>
+            </div>
+            <div class="right">
+                <textarea id='publicKeyPem'> </textarea>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    const pki = forge.pki;
+    const rsa = pki.rsa;
+
+    let selection = document.querySelector("select#selection");
+    let generator = document.querySelector("button#button_generator");
+    let privateKeyPem = document.querySelector("textarea#privateKeyPem");
+    let publicKeyPem = document.querySelector("textarea#publicKeyPem");
+
+    //
+    selection.addEventListener("change",()=>{
+        console.log(selection.value)
+    })
+    //console.log(bits.value)
+
+    generator.addEventListener("click",()=>{
+        let number = selection.value;
+        let keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
+        
+        let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
+        let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
+        let prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
+        
+        //let pem = pki.privateKeyToPem(keypair.privateKey);
+        privateKeyPem.value = prvPem;
+        console.log(prvPem);
+        //console.log(pem);
+        let pubPem = pki.publicKeyToPem(keypair.publicKey);
+        publicKeyPem.value = pubPem;
+        console.log(pubPem);
+    })
+
+</script>
+</html>
