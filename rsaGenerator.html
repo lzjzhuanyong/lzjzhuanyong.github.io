@@ -15,7 +15,7 @@
         textarea#privateKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
         textarea#publicKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
         
-        div.button_transform {top: 50%; border: 2px solid red}
+        div.button_transform {position: relative; top:40%; border: 2px solid red}
     
     </style>
     <script src="forge.min.js"></script>
@@ -39,7 +39,9 @@
                 <textarea id='privateKeyPem'> </textarea>
             </div>
             <div class="middle">
-                <div class="button_transform">prvKey to pubKey</div>
+                <div class="button_transform">
+                    <p>prvKey to pubKey</p>
+                </div>
             </div>
             <div class="right">
                 <textarea id='publicKeyPem'> </textarea>
@@ -63,21 +65,38 @@
     //console.log(bits.value)
 
     generator.addEventListener("click",()=>{
-        let number = selection.value;
-        let keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
+        generator.disabled = true;
+        // let number = selection.value;
+        // let keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
         
-        let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
-        let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
-        let prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
+        // let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
+        // let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
+        // let prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
         
-        //let pem = pki.privateKeyToPem(keypair.privateKey);
-        privateKeyPem.value = prvPem;
-        console.log(prvPem);
-        //console.log(pem);
-        let pubPem = pki.publicKeyToPem(keypair.publicKey);
-        publicKeyPem.value = pubPem;
-        console.log(pubPem);
+        // //let pem = pki.privateKeyToPem(keypair.privateKey);
+        // privateKeyPem.value = prvPem;
+        // console.log(prvPem);
+        // //console.log(pem);
+        // let pubPem = pki.publicKeyToPem(keypair.publicKey);
+        // publicKeyPem.value = pubPem;
+        // console.log(pubPem);
+        var blob = new Blob([document.querySelector('#worker').textContent]);
+        var url = window.URL.createObjectURL(blob);
+        var worker = new Worker(url);
+
+        worker.postMessage([selection.value]);
+        worker.onmessage = function (e) {
+            console.log(e.data)
+        };
     })
 
+</script>
+<script id="worker" type="js/worker">
+    importScripts("forge.min.js")
+    self.addEventListener('message', function (e) {
+        let number = e.data[0];
+        console.log(number);
+        postMessage('some message');
+    }, false);
 </script>
 </html>
