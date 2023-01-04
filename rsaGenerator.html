@@ -6,16 +6,16 @@
     <style>
         html,body {height: 100%;}
         div#root {background-color: white; height: 100%; width:100%;}
-        div.header {display:flex; height: 12%; width: 100%; border: 2px solid red}
-        div.main {display:flex; width: 100%;height: 80%; border: 2px solid red}
-        div.left {width:45%;border: 2px solid red}
-        div.right {width:45%;border:2px solid red}
+        div.header {display:flex; height: 12%; width: 100%;}
+        div.main {display:flex; width: 100%;height: 80%;}
+        div.left {width:45%;}
+        div.right {width:45%;}
         div.middle {width:10%;}
         
         textarea#privateKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
         textarea#publicKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
         
-        div.button_transform {position: relative; top:40%; border: 2px solid red}
+        div.button_transform {position: relative; top:40%;}
     
     </style>
     <script src="forge.min.js"></script>
@@ -50,6 +50,7 @@
     </div>
 </body>
 <script>
+    
     const pki = forge.pki;
     const rsa = pki.rsa;
 
@@ -63,7 +64,7 @@
         console.log(selection.value)
     })
     //console.log(bits.value)
-
+    console.log(location.href,location.pathname);
     generator.addEventListener("click",()=>{
         generator.disabled = true;
         // let number = selection.value;
@@ -83,20 +84,39 @@
         var blob = new Blob([document.querySelector('#worker').textContent]);
         var url = window.URL.createObjectURL(blob);
         var worker = new Worker(url);
-
+        
         worker.postMessage([selection.value]);
         worker.onmessage = function (e) {
-            console.log(e.data)
+            
+            privateKeyPem.value = e.data[0];
+            
+            publicKeyPem.value = e.data[1];
+            generator.disabled = false;
         };
     })
 
 </script>
 <script id="worker" type="js/worker">
-    importScripts("forge.min.js")
+    importScripts("https://lzjzhuanyong.github.io/forge.min.js");
+    const pki = forge.pki;
+    const rsa = pki.rsa;
+
     self.addEventListener('message', function (e) {
         let number = e.data[0];
         console.log(number);
-        postMessage('some message');
+
+        
+        let keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
+       
+        
+        let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
+        let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
+        let prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
+        let pubPem = pki.publicKeyToPem(keypair.publicKey);
+
+        postMessage([prvPem,pubPem]);
+
+        close();
     }, false);
 </script>
 </html>
