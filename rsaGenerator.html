@@ -1,72 +1,241 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8"> 
     <style>
         html,body {height: 100%;}
-        div#root {background-color: white; height: 100%; width:100%;}
-        div.header {display:flex; height: 12%; width: 100%;}
-        div.main {display:flex; width: 100%;height: 80%;}
-        div.left {width:45%;}
-        div.right {width:45%;}
-        div.middle {width:10%;}
+        div#root {display: grid; grid-template-rows: 16% 82%; height: 100%; width:100%; }
         
-        textarea#privateKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
-        textarea#publicKeyPem {width: 95%; height:90%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        div.main {display:grid; grid-template-columns: 44% 12% 44%;}
+   
+        div.bitsSelection {margin: 16px 0px 0px 8px;display:inline-block}
+        div.button_generator {display: inline-block}
+
+        button.button_generator {padding: 8px 10px; margin: 10px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button.button_generator:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+        button.button_generator:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
         
-        div.button_transform {position: relative; top:40%;}
-    
+        select#bitsSelection {padding: 8px 16px; margin: 16px 16px 1px 0px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
+
+        select#prvKeyFormat {padding: 8px 16px; margin: 0px 16px 0px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
+
+        h2 {margin: 16px 0px 0px 8px;}
+        h4 {margin: 16px 0px 0px 8px; padding: 8px 0px; }
+
+        div.prvh4 {display:inline-block}
+        div.prvKeyFormat {display:inline-block}
+
+        div.textarea {height:85%}
+        
+        textarea#privateKeyPem {width: 95%; height:95%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        button#button_copyPrvKey { padding: 8px 10px; margin: 0px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button#button_copyPrvKey:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+        button#button_copyPrvKey:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
+        span.button_copyPrvKey {background-color:black;color:white;visibility: hidden;}
+        
+        textarea#publicKeyPem {width: 95%; height:95%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        button#button_copyPubKey { padding: 8px 10px; margin: 0px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button#button_copyPubKey:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+        button#button_copyPubKey:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
+        span.button_copyPubKey {background-color:black;color:white;visibility: hidden;}
+        
+        
+        div.button_transform>p:first-child {position:absolute;margin: -1px;height:100px;width:100%; background-color:#5bc0de; cursor: pointer;border: 1px outset #4796ad;user-select: none;text-align: center;line-height:30px;   }
+        div.button_transform {position:relative;top:40%; height:100px;width:70%; background-color:#5bc0de; cursor: pointer;border: 1px outset #4796ad;user-select: none;}
+        div.button_transform::before {position: absolute;content:"";width:0;height:0;border:73px solid transparent;border-left:53px solid #4796ad;border-right-width: 0px;left:100%; top:-21px;margin-left: -1px; cursor: pointer;}
+        
+        div.button_transform::after {position:absolute;content:"";width:0;height:0;border:70px solid transparent;border-left:50px solid #5bc0de;border-right-width: 0px;left:100%;top:-20px;cursor: pointer;}
+        div.button_transform:hover {box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);}
+        div.button_transform:hover::after {filter: drop-shadow(8px 2px 5px rgba(0, 0, 0, .2));}
+        
+        div.button_transform:active {background-color: pink;}
+        div.button_transform:active::after { border-left:50px solid pink}
+        div.button_transform:active > p:first-child {background-color: pink;}
+
+
+        .line-spin-fade-loader {position: relative;width: 95%; height:95%;top: -95%;left: 2%; display: none;cursor:wait;}
+
+        .line-spin-fade-loader > div:nth-child(1) {top: 60px; left: 0px;animation: line-spin-fade-loader 1.2s -0.84s infinite ease-in-out; }
+        .line-spin-fade-loader > div:nth-child(2) {top: 42.42641px;left: 42.42641px;transform: rotate(-45deg);animation: line-spin-fade-loader 1.2s -0.72s infinite ease-in-out; }
+        .line-spin-fade-loader > div:nth-child(3) {top: 0px;left: 60px;transform: rotate(90deg);animation: line-spin-fade-loader 1.2s -0.6s infinite ease-in-out; }
+        .line-spin-fade-loader > div:nth-child(4) {top: -42.42641px;left: 42.42641px;transform: rotate(45deg);animation: line-spin-fade-loader 1.2s -0.48s infinite ease-in-out; }
+        .line-spin-fade-loader > div:nth-child(5) {top: -60px;left: 0px;animation: line-spin-fade-loader 1.2s -0.36s infinite ease-in-out; }
+        .line-spin-fade-loader > div:nth-child(6) {top: -42.42641px;left: -42.42641px;transform: rotate(-45deg);animation: line-spin-fade-loader 1.2s -0.24s infinite ease-in-out; }
+        .line-spin-fade-loader > div:nth-child(7) {top: 0px;left: -60px;transform: rotate(90deg);animation: line-spin-fade-loader 1.2s -0.12s infinite ease-in-out; }
+        .line-spin-fade-loader > div:nth-child(8) {top: 42.42641px;left: -42.42641px;transform: rotate(45deg);animation: line-spin-fade-loader 1.2s 0s infinite ease-in-out; }
+        
+        .line-spin-fade-loader > div {background-color: gray;width: 4px;height: 35px;border-radius: 2px;margin: 150px 0 0 50%;animation-fill-mode: both;position: absolute;width: 10px;height: 60px;}
+        @keyframes line-spin-fade-loader {50% {opacity: 0.3;} 100% {opacity: 1;}}
+
+        
+        .ball-spin-fade-loader {position: relative;width: 95%; height:95%;top: -95%;left: 2%; display:none;cursor:wait;}
+  
+        .ball-spin-fade-loader > div:nth-child(1) {top: 80px;left: 0;animation: ball-spin-fade-loader 1s -0.96s infinite linear; }
+        .ball-spin-fade-loader > div:nth-child(2) {top: 56.56854px;left: 56.56854px;animation: ball-spin-fade-loader 1s -0.84s infinite linear; }
+        .ball-spin-fade-loader > div:nth-child(3) {top: 0;left: 80px;animation: ball-spin-fade-loader 1s -0.72s infinite linear; }
+        .ball-spin-fade-loader > div:nth-child(4) {top: -56.56854px;left: 56.56854px;animation: ball-spin-fade-loader 1s -0.6s infinite linear; }
+        .ball-spin-fade-loader > div:nth-child(5) {top: -80px;left: 0;animation: ball-spin-fade-loader 1s -0.48s infinite linear; }
+        .ball-spin-fade-loader > div:nth-child(6) {top: -56.56854px;left: -56.56854px;animation: ball-spin-fade-loader 1s -0.36s infinite linear; }
+        .ball-spin-fade-loader > div:nth-child(7) {top: 0;left: -80px;animation: ball-spin-fade-loader 1s -0.24s infinite linear; }
+        .ball-spin-fade-loader > div:nth-child(8) {top: 56.56854px;left: -56.56854px;animation: ball-spin-fade-loader 1s -0.12s infinite linear; }
+        
+        .ball-spin-fade-loader > div {background-color: gray;width: 50px;height: 50px;border-radius: 100%;margin: 150px 0% 0 50%;animation-fill-mode: both;position: absolute;}
+        @keyframes ball-spin-fade-loader {50% {opacity: 0.3;transform: scale(0.4);} 100% {opacity: 1;transform: scale(1); } }
     </style>
     <script src="forge.min.js"></script>
     <title>RSA Key Generator Tool</title>
 </head>
 <body>
     <div id="root">
+        
         <div class="header">
             <div>
-                <select id="selection">
+                <h2>RSA Key Generator Tool</h2>
+            </div>
+            <div>
+                <p></p>
+            </div>
+            <div class="bitsSelection">
+                <select id="bitsSelection">
                     <option value="2048">2048 bits</option>
                     <option value="4096">4096 bits</option>
                 </select>
             </div>
-            <div>
-                <button id='button_generator' class="button" type="button">generate</button>
+            <div class="button_generator">
+                <button id='button_generator' class="button_generator" type="button">generate</button>
             </div>
         </div>
         <div class="main">
             <div class="left">
-                <textarea id='privateKeyPem'> </textarea>
+                <div class="prvh4">
+                    <h4>Private Key:</h4>
+                </div>
+                <div class="prvKeyFormat">
+                    <select id="prvKeyFormat">
+                        <option value="PKCS1">PKCS#1</option>
+                        <option value="PKCS8" selected>PKCS#8</option>
+                    </select>
+                </div>
+                <div class="textarea">
+                    <textarea id='privateKeyPem'> </textarea>
+                    <div class="line-spin-fade-loader">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>  
+                <div>
+                    <button id="button_copyPrvKey" type="button">Copy Private Key</button>
+                    <span class="button_copyPrvKey">Copied!</span>
+                </div>
             </div>
             <div class="middle">
                 <div class="button_transform">
-                    <p>prvKey to pubKey</p>
+                    <p>prvKey<br>to<br>pubKey</p>
                 </div>
             </div>
             <div class="right">
-                <textarea id='publicKeyPem'> </textarea>
+                <div>
+                    <h4>Public Key:</h4>
+                </div>
+                <div class="textarea">
+                    <textarea id='publicKeyPem'> </textarea>
+                    <div class="ball-spin-fade-loader">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+                <div>
+                    <button id="button_copyPubKey" type="button">Copy Public Key</button>
+                    <span class="button_copyPubKey">Copied!</span>
+                </div>
             </div>
         </div>
     </div>
 </body>
-<script>
+<script type="text/javascript">
     
     const pki = forge.pki;
-    const rsa = pki.rsa;
 
-    let selection = document.querySelector("select#selection");
+    let path = location.href.split("/").slice(-1);
+    let baseUrl = location.href.replace(path,"forge.min.js");
+    console.log(baseUrl)
+
+    let bitsSelection = document.querySelector("select#bitsSelection");
     let generator = document.querySelector("button#button_generator");
     let privateKeyPem = document.querySelector("textarea#privateKeyPem");
     let publicKeyPem = document.querySelector("textarea#publicKeyPem");
+    let transform = document.querySelector("div.button_transform");
 
+    let copyPrvKey = document.querySelector("button#button_copyPrvKey");
+    let copyPubKey = document.querySelector("button#button_copyPubKey");
+
+    let prvKeyFormat = document.querySelector("select#prvKeyFormat");
+
+    let linespinloader = document.querySelector("div.line-spin-fade-loader");
+    let ballspinloader = document.querySelector("div.ball-spin-fade-loader");
     //
-    selection.addEventListener("change",()=>{
-        console.log(selection.value)
+    bitsSelection.addEventListener("change",()=>{
+        console.log(bitsSelection.value)
     })
+
+    prvKeyFormat.addEventListener("change",()=>{
+        console.log(prvKeyFormat.value);
+        try{
+            let privateKey = pki.privateKeyFromPem(privateKeyPem.value);
+            if(prvKeyFormat.value === "PKCS1"){
+                let prvPem = pki.privateKeyToPem(privateKey);
+                privateKeyPem.value = prvPem;
+            }
+            else if(prvKeyFormat.value === "PKCS8"){
+                let rsaPrivateKey = pki.privateKeyToAsn1(privateKey);
+                let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
+                let prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
+                privateKeyPem.value = prvPem;
+            }
+            else{
+                console.log("none");
+            }
+        }
+        catch(error){
+            privateKeyPem.value = "Please enter the correct Private Key before choose the format of key!"
+            console.log(error)
+        }
+        
+    })
+
+    transform.addEventListener("click",()=>{
+        try{
+            let privateKey = pki.privateKeyFromPem(privateKeyPem.value);
+            let publicKey = pki.setRsaPublicKey(privateKey.n, privateKey.e);
+            let pubPem = pki.publicKeyToPem(publicKey);
+            publicKeyPem.value = pubPem;
+            console.log(pubPem)
+        }
+        catch(error){
+            publicKeyPem.value = "Please enter the correct Private Key before using the private key to get the public key!"
+            console.log(error);
+        }
+    })
+
     //console.log(bits.value)
-    console.log(location.href,location.pathname);
+    
     generator.addEventListener("click",()=>{
         generator.disabled = true;
+        generator.style = "opacity: 0.6; cursor: wait";
+        linespinloader.style = "display:block";
+        ballspinloader.style = "display:block";
         // let number = selection.value;
         // let keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
         
@@ -81,28 +250,53 @@
         // let pubPem = pki.publicKeyToPem(keypair.publicKey);
         // publicKeyPem.value = pubPem;
         // console.log(pubPem);
-        var blob = new Blob([document.querySelector('#worker').textContent]);
-        var url = window.URL.createObjectURL(blob);
-        var worker = new Worker(url);
+        let blob = new Blob([document.querySelector('#worker').textContent]);
+        let url = window.URL.createObjectURL(blob);
+        let worker = new Worker(url);
         
-        worker.postMessage([selection.value]);
-        worker.onmessage = function (e) {
+        worker.postMessage([bitsSelection.value,baseUrl]);
+        worker.onmessage = function (event) {
             
-            privateKeyPem.value = e.data[0];
+            privateKeyPem.value = event.data[0];
             
-            publicKeyPem.value = e.data[1];
+            publicKeyPem.value = event.data[1];
+
             generator.disabled = false;
+            generator.style = "opacity: 1; cursor: pointer";
+            linespinloader.style = "display:none";
+            ballspinloader.style = "display:none";
         };
     })
 
-</script>
-<script id="worker" type="js/worker">
-    importScripts("https://lzjzhuanyong.github.io/forge.min.js");
-    const pki = forge.pki;
-    const rsa = pki.rsa;
+    copyPrvKey.addEventListener("click", ()=>{
+        
+        navigator.clipboard.writeText(privateKeyPem.value).then(()=>{
+            let span_message = document.querySelector("span.button_copyPrvKey");
+            span_message.style="visibility:visible";
+            setTimeout(function(){span_message.style="visibility:hidden"},800);
+        })
+    })
 
-    self.addEventListener('message', function (e) {
-        let number = e.data[0];
+    copyPubKey.addEventListener("click", ()=>{
+        
+        navigator.clipboard.writeText(publicKeyPem.value).then(()=>{
+            let span_message = document.querySelector("span.button_copyPubKey");
+            span_message.style="visibility:visible";
+            setTimeout(function(){span_message.style="visibility:hidden"},800);
+        })
+    })
+
+</script>
+
+<script id="worker" type="js/worker">
+    
+    self.addEventListener('message', function (event) {
+
+        importScripts(event.data[1]);
+        const pki = forge.pki;
+        const rsa = pki.rsa;
+
+        let number = event.data[0];
         console.log(number);
 
         
