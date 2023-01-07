@@ -1,17 +1,18 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8"> 
     <style>
-        html,body {height: 100%;}
-        div#root {display: grid; grid-template-rows: 16% 82%; height: 100%; width:100%; }
+        html,body {height: 98%;}
+        div#root {display: grid; grid-template-rows: 16% 80%; height: 98%; width:100%;}
         
         div.main {display:grid; grid-template-columns: 44% 12% 44%;}
    
-        div.bitsSelection {margin: 16px 0px 0px 8px;display:inline-block}
+        div.bitsSelection {margin: 8px 0px 0px 8px;display:inline-block}
         div.button_generator {display: inline-block}
 
-        button.button_generator {padding: 8px 10px; margin: 10px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button.button_generator {padding: 8px 10px; margin: 8px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
         button.button_generator:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
         button.button_generator:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
         
@@ -19,13 +20,13 @@
 
         select#prvKeyFormat {padding: 8px 16px; margin: 0px 16px 0px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
 
-        h2 {margin: 16px 0px 0px 8px;}
+        h2 {margin: 8px 0px 0px 8px;}
         h4 {margin: 16px 0px 0px 8px; padding: 8px 0px; }
 
         div.prvh4 {display:inline-block}
         div.prvKeyFormat {display:inline-block}
 
-        div.textarea {height:85%}
+        div.textarea {height:83%}
         
         textarea#privateKeyPem {width: 95%; height:95%; padding: 12px 8px; margin: 16px 0px 0px 8px; display:block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
         button#button_copyPrvKey { padding: 8px 10px; margin: 0px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
@@ -92,9 +93,6 @@
             <div>
                 <h2>RSA Key Generator Tool</h2>
             </div>
-            <div>
-                <p></p>
-            </div>
             <div class="bitsSelection">
                 <select id="bitsSelection">
                     <option value="2048">2048 bits</option>
@@ -102,7 +100,7 @@
                 </select>
             </div>
             <div class="button_generator">
-                <button id='button_generator' class="button_generator" type="button">generate</button>
+                <button id='button_generator' class="button_generator" type="button">Generate New Key</button>
             </div>
         </div>
         <div class="main">
