@@ -207,7 +207,7 @@
             }
         }
         catch(error){
-            privateKeyPem.value = "Please enter the correct Private Key before choose the format of key!"
+            privateKeyPem.value = "Please enter the correct Private Key before choose the format of key!\n" + privateKeyPem.value;
             console.log(error)
         }
         
@@ -222,7 +222,7 @@
             console.log(pubPem)
         }
         catch(error){
-            publicKeyPem.value = "Please enter the correct Private Key before using the private key to get the public key!"
+            publicKeyPem.value = "Please enter the correct Private Key before using the private key to get the public key!\n" + publicKeyPem.value;
             console.log(error);
         }
     })
