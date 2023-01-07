@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -207,7 +206,7 @@
             }
         }
         catch(error){
-            privateKeyPem.value = "Please enter the correct Private Key before choose the format of key!\n" + privateKeyPem.value;
+            privateKeyPem.value = "Please enter the correct Private Key before choose the format of key!"
             console.log(error)
         }
         
@@ -222,7 +221,7 @@
             console.log(pubPem)
         }
         catch(error){
-            publicKeyPem.value = "Please enter the correct Private Key before using the private key to get the public key!\n" + publicKeyPem.value;
+            publicKeyPem.value = "Please enter the correct Private Key before using the private key to get the public key!"
             console.log(error);
         }
     })
@@ -252,7 +251,8 @@
         let url = window.URL.createObjectURL(blob);
         let worker = new Worker(url);
         
-        worker.postMessage([bitsSelection.value,baseUrl]);
+        worker.postMessage([bitsSelection.value, prvKeyFormat.value, baseUrl]);
+
         worker.onmessage = function (event) {
             
             privateKeyPem.value = event.data[0];
@@ -263,7 +263,12 @@
             generator.style = "opacity: 1; cursor: pointer";
             linespinloader.style = "display:none";
             ballspinloader.style = "display:none";
+
+            
+            worker.terminate();
         };
+
+        
     })
 
     copyPrvKey.addEventListener("click", ()=>{
@@ -290,25 +295,33 @@
     
     self.addEventListener('message', function (event) {
 
-        importScripts(event.data[1]);
+        importScripts(event.data[2]);
         const pki = forge.pki;
         const rsa = pki.rsa;
 
         let number = event.data[0];
-        console.log(number);
+        let format = event.data[1];
 
         
         let keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
+        let prvPem = '';
        
+        if(format === "PKCS8"){
+            let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
+            let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
+            
+            prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
+        }
+        else if(format === "PKCS1"){
+            prvPem = pki.privateKeyToPem(keypair.privateKey);
+        }
         
-        let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
-        let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
-        let prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
         let pubPem = pki.publicKeyToPem(keypair.publicKey);
 
         postMessage([prvPem,pubPem]);
-
-        close();
+        
+        self.close();
+        
     }, false);
 </script>
 </html>
