@@ -135,7 +135,7 @@
             </div>
             <div class="middle">
                 <div class="button_transform">
-                    <p id="p1">prvKey<br>to<br>pubKey</p>
+                    <p>prvKey<br>to<br>pubKey</p>
                 </div>
             </div>
             <div class="right">
@@ -219,10 +219,6 @@
     })
 
     transform.addEventListener("click",()=>{
-
-        console.log(transform.firstElementChild.outerHTML)
-        
-        console.log(transform.firstElementChild.outerHTML)
 
         try{
             let privateKey = pki.privateKeyFromPem(privateKeyPem.value);
