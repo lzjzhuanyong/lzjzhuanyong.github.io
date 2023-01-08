@@ -23,7 +23,7 @@
         h4 {margin: 16px 0px 0px 8px; padding: 8px 0px; }
 
         div.prvh4 {display:inline-block}
-        div.prvKeyFormat {display:inline-block}
+        div.prvKeyFormat {position:relative;display:inline-block}
 
         div.textarea {height:83%}
         
@@ -40,7 +40,7 @@
         span.button_copyPubKey {background-color:black;color:white;visibility: hidden;}
         
         
-        div.button_transform>p:first-child {position:absolute;margin: -1px;height:100px;width:100%; background-color:#5bc0de; cursor: pointer;border: 1px outset #4796ad;user-select: none;text-align: center;line-height:30px;   }
+        div.button_transform>p:first-child {position:absolute;margin: -1px;height:100px;width:100%; background-color:#5bc0de; cursor: pointer;border: 1px outset #4796ad;user-select: none;text-align: center;line-height:30px;}
         div.button_transform {position:relative;top:40%; height:100px;width:70%; background-color:#5bc0de; cursor: pointer;border: 1px outset #4796ad;user-select: none;}
         div.button_transform::before {position: absolute;content:"";width:0;height:0;border:73px solid transparent;border-left:53px solid #4796ad;border-right-width: 0px;left:100%; top:-21px;margin-left: -1px; cursor: pointer;}
         
@@ -52,6 +52,8 @@
         div.button_transform:active::after { border-left:50px solid pink}
         div.button_transform:active > p:first-child {background-color: pink;}
 
+        span.wrong {position:absolute;background-color: black; color:white;top:-10px; z-index:1;}
+        span.success {position:absolute;background-color: black; color:white;top:120px; z-index:1;}
 
         .line-spin-fade-loader {position: relative;width: 95%; height:95%;top: -95%;left: 2%; display: none;cursor:wait;}
 
@@ -133,7 +135,7 @@
             </div>
             <div class="middle">
                 <div class="button_transform">
-                    <p>prvKey<br>to<br>pubKey</p>
+                    <p id="p1">prvKey<br>to<br>pubKey</p>
                 </div>
             </div>
             <div class="right">
@@ -204,31 +206,45 @@
             else{
                 console.log("none");
             }
+
+            format_change_prompt(prvKeyFormat.parentNode,"success","Success!","20px");
         }
         catch(error){
             privateKeyPem.value = "Please enter the correct Private Key before choose the format of key!\n" + privateKeyPem.value;
             console.log(error)
+
+            format_change_prompt(prvKeyFormat.parentNode,"wrong","Wrong!","-10px");
         }
         
     })
 
     transform.addEventListener("click",()=>{
+
+        console.log(transform.firstElementChild.outerHTML)
+        
+        console.log(transform.firstElementChild.outerHTML)
+
         try{
             let privateKey = pki.privateKeyFromPem(privateKeyPem.value);
             let publicKey = pki.setRsaPublicKey(privateKey.n, privateKey.e);
             let pubPem = pki.publicKeyToPem(publicKey);
             publicKeyPem.value = pubPem;
             console.log(pubPem)
+
+            format_change_prompt(transform,"success","Success!","120px");
         }
         catch(error){
             publicKeyPem.value = "Please enter the correct Private Key before using the private key to get the public key!\n" + publicKeyPem.value;
             console.log(error);
+
+            format_change_prompt(transform,"wrong","Wrong!","-40px");
         }
     })
 
     //console.log(bits.value)
     
     generator.addEventListener("click",()=>{
+        
         generator.disabled = true;
         generator.style = "opacity: 0.6; cursor: wait";
         linespinloader.style = "display:block";
@@ -289,6 +305,19 @@
         })
     })
 
+</script>
+
+<script id="format_change_prompt" type="text/javascript">
+
+    function format_change_prompt(node,className,message,toTop){
+        let span = document.createElement("span");
+        span.classList.add(className);
+        span.append(message);
+        span.style.top=toTop
+        node.append(span);
+        setTimeout(function(){span.remove()},800);
+    }
+            
 </script>
 
 <script id="worker" type="js/worker">
