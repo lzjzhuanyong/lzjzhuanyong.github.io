@@ -15,3 +15,5 @@ signature tool for work
 
 2023-01-06 update: Add a new page for the RSA key generation tool, [rsaGenerator.html](https://lzjzhuanyong.github.io/rsaGenerator.html).  This page is fully designed with friendly style. 
 (I was manually added the web worker script for the RSA generation, not used the forge.js imbedded web worker function, because I want to learn and familiar with this feature.)
+
+2023-01-09 update: Re-designed the signature tool, [wstool.html](https://lzjzhuanyong.github.io/wstool.html), and support signing the query string to get signature with the RSA format key.
