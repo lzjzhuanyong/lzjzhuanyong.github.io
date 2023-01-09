@@ -1,75 +1,139 @@
-
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="uft-8">
     <script src="forge.min.js"></script>
+    <style>
+        html,body {height: 99%}
+        div.root {display:grid; height: 100%;grid-template-rows: 49% 2% 39%;}
+        div.upper {display:grid; grid-template-columns: 54% 2% 39%;}
+
+
+        h1 {margin: 16px 0px 16px 8px;}
+        h4 {margin: 16px 0px 16px 8px;}
+
+        hr.middleline {border: 1px solid lightgrey; background-color: lightgrey;}
+        hr.upper {height: 95%;width: 2px;border:none}
+        hr.root {width: 93%;height:2px;margin:8px 0px 0px 8px;border:none}
+
+        div.baseurl {margin: 16px 0px 0px 8px;display:inline-block;}
+        div.path {display:inline-block}
+        input#baseurl {width: 65%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+        input#path {width: 65%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+
+        p.example {margin: 8px 0px 0px 8px;font-size: 14px;}
+
+        textarea#customized {width: 90%; height:20%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+
+        div.recvWindow {margin: 0px 0px 0px 8px;display:inline-block;}
+        div.timestamp {display:inline-block;}
+        input#recvWindow {width: 50%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+        input#timestamp {width: 50%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+
+        button#sign_button {width: 15%; height: 10%; padding: 5px 10px; margin: 24px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button#sign_button:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+        button#sign_button:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
+        
+        h4.secretKey {display:inline-block}
+        select#keyFormat {display:inline-block;padding: 8px 16px; margin: 16px 16px 1px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
+
+        div.areaSecKey {height:80%}
+        textarea#secretKey {width: 95%; height:95%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+
+        input#signature {width: 93%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+
+        div.requesturl {height:30%;}
+        textarea#requesturl {width: 93%; height:80%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+
+        button#copytRequest {width: 10%; height: 10%; padding: 5px 10px; margin: 16px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button#copytRequest:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+        button#copytRequest:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
+        span.copytRequest {background-color:black;color:white;visibility: hidden;}
+    </style>
 </head>
 <body>
-    <h1>Signature Tool</h1>
-    <p>
-        base url: <input type='text' id="baseurl" value="https://api.binance.com/">
-    </p>
-    <p>
-        path: <input type='text' id="path" value="api/v3/order">
-    </p>
+    <div class="root">
+        <div class="upper">
+            <div class="left">
+                <h1>Signature Tool</h1>
+                <div>
+                    <div class="baseurl">
+                        base url: <input type='text' id="baseurl" value="https://api.binance.com/">
+                    </div>
+                    <div class="path">
+                        path: <input type='text' id="path" value="api/v3/order">
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <h4>Customized the querystring:</4>
+                    </div>
+                    <div>
+                        <p class="example">example:</p>
+                        <p class="example">symbol=BTCUSDT&side=BUY&type=LIMIT&quantity=1&price=300&newOrderRespType=FULL</p>
+                    </div>
+                    <div>
+                        <textarea id='customized'>symbol=BTCUSDT&side=BUY&type=LIMIT&quantity=1&price=300&newOrderRespType=FULL</textarea>
+                    </div>
+                </div>
+                <div>
+                    <div class="recvWindow">
+                        <input type="checkbox" name="recvWindow" checked="true">recvWindow: <input type='text' id="recvWindow" value=60000>
+                    </div>
+                    <div class="timestamp">
+                        <input type="checkbox" name="timestamp" checked="true">timestamp: <input type="text" id='timestamp'>      
+                    </div>
+                    
+                </div>
+                <div>
 
-    <p> 
-        <p>define the querystring by users: </p>
-        <p>example: symbol=BTCUSDT&side=BUY&type=LIMIT&quantity=1&price=300&newOrderRespType=FULL</p>
-        <p><input type='text' id='customized' size=150 value="symbol=BTCUSDT&side=BUY&type=LIMIT&quantity=1&price=300&newOrderRespType=FULL"> </p> 
-    </p>
-
-    <p>
-        <input type="checkbox" name="recvWindow" checked="true">recvWindow: <input type='text' id="recvWindow" value=5000>
-        <input type="checkbox" name="timestamp" checked="true">timestamp: <input type="text" id='timestamp'>      
-    </p>
-
-    <p>
-        secretKey: <input type='text' id="secretKey" size=70>
-        signature: <input type='text' id='signature' size=70>
-    </p>
-    <button id='button1'>submit</button>
-
-    <p>
-        querystring: 
-    </p>
-    <textarea id='querystring' cols=150 rows=4 style='resize:none'></textarea>
-    <p>
-        URL command: 
-    </p>
-    <textarea id='URLcommand' cols=150 rows=4 style='resize:none'></textarea>
+                    <button id='sign_button' type="button">Sign Query</button>
+                </div>
+                
+            </div>
+            <hr class="upper middleline">
+            <div class="right">
+                <div>
+                    <h4 class="secretKey">Secret Key/Private Key:</h4> 
+                    <select id="keyFormat">
+                        <option value="HMAC">HMAC Key</option>
+                        <option value="RSA">RSA Key</option>
+                    </select>
+                </div>
+                <div class="areaSecKey">
+                    <textarea id='secretKey'></textarea>
+                </div>
+            </div>
+        </div>
+        <hr class="root middleline">
+        <div class="lower">
+            <div>
+                <h4>Signature:</h4> 
+                <input type='text' id='signature'>
+            </div>
+            
+            <h4>Request URL:</h4> 
+            <div class="requesturl">
+                <textarea id='requesturl'></textarea>
+            </div>
+            <div class="copytRequest">
+                <button id="copytRequest" type="button">Copy Request</button>
+                <span class="copytRequest">Copied</span>
+            </div>
+        </div>
+    </div>
 </body>
-    <script type='text/javascript'>
 
-        
+<script type='text/javascript'>
 
         const hmac = forge.hmac.create();
-        
+        const pki = forge.pki;
+
+
         //url and path
         let baseurl = document.querySelector("#baseurl");
         let path = document.querySelector("#path");
-        let button1 = document.querySelector('#button1');
-
-        //querystring parameter
-        // let asset = document.querySelector("#asset");
-        // let symbol = document.querySelector('#symbol');
-
-        // let side = document.querySelector("#side");
-        // let type = document.querySelector("#type");
-        // let timeInForce = document.querySelector("#timeInForce");
-        // let quantity = document.querySelector('#quantity');
-        // let quoteOrderQty = document.querySelector('#quoteOrderQty');
-        // let price = document.querySelector("#price");
-        // let startTime = document.querySelector('#startTime');
-        // let endTime = document.querySelector('#endTime');
-
-        // let orderId = document.querySelector('#orderId');
-        // let origClientOrderId = document.querySelector('#origClientOrderId');
-
-        // let address = document.querySelector("#address");
-        // let amount = document.querySelector("#amount");
-
-        // let email = document.querySelector("#email");
+        let sign_button = document.querySelector('#sign_button');
 
         //most querystring needed
         let recvWindow = document.querySelector("#recvWindow");
@@ -86,42 +150,25 @@
 
         let signature = document.querySelector('#signature');
 
-        let querystring = document.querySelector("#querystring");
-        let URLcommand = document.querySelector("#URLcommand");
+        let requesturl = document.querySelector("#requesturl");
 
-        button1.addEventListener('click',()=>{
-            hmac.start('sha256',secretKey.value);
+        let keyFormat = document.querySelector("select#keyFormat");
 
-            // data.asset = asset.value;
-            // data.symbol = symbol.value;
-            // data.side = side.value;
-            // data.type = type.value;
+       
 
-            // data.timeInForce = timeInForce.value;
-            // data.quantity = quantity.value;
-            // data.quoteOrderQty = quoteOrderQty.value;
-            // data.price = price.value;
 
-            // data.startTime = startTime.value;
-            // data.endTime = endTime.value;
+        keyFormat.addEventListener("change",()=>{
+            console.log(keyFormat.value);
+        })
 
-            // data.orderId = orderId.value;
-            // data.origClientOrderId = origClientOrderId.value;
 
-            // data.address = address.value;
-            // data.amount = amount.value;
-
-            // data.email = email.value;
-
+        sign_button.addEventListener('click',()=>{
 
             if(document.querySelector("[name='recvWindow']").checked)
-                data.recvWindow = recvWindow.value;
-            
+                    data.recvWindow = recvWindow.value;
+                
             if(document.querySelector("[name='timestamp']").checked)
                 data.timestamp = timestamp.value;
-            
-
-            //data.customized = customized.value;
 
             let queryparameter = '';
 
@@ -140,16 +187,39 @@
                         queryparameter = queryparameter+parameter+'='+data[parameter]+"&";
                 }
             }
-            
-            
+                
             queryparameter = queryparameter.substr(0,queryparameter.length-1);
             console.log(queryparameter)
 
-            hmac.update(queryparameter);
-            signature.value = hmac.digest().toHex();
+            if(keyFormat.value === "HMAC"){
+                
+                //console.log(secretKey.value)
+                //console.log(secretKey.value.replace(/[\s]+$/g,''))
+                
+                //eliminate the space and line break character with regex
+                hmac.start('sha256',secretKey.value.replace(/[\s]+$/g,''));
+                hmac.update(queryparameter);
+                signature.value = hmac.digest().toHex();
 
-            querystring.value = queryparameter+"&"+"signature="+signature.value;
-            URLcommand.value = baseurl.value+path.value+'?'+querystring.value;
+                let querystring = queryparameter+"&"+"signature="+signature.value;
+                requesturl.value = baseurl.value+path.value+'?'+querystring;
+            }
+            else if(keyFormat.value === "RSA"){
+                try{
+                    let privateKey = pki.privateKeyFromPem(secretKey.value);
+                    let md = forge.md.sha256.create();
+                    md.update(queryparameter,"utf8");
+                    
+                    signature.value = encodeURIComponent(btoa(privateKey.sign(md)));
+                    
+                    let querystring = queryparameter+"&"+"signature="+signature.value;
+                    requesturl.value = baseurl.value+path.value+'?'+querystring;
+                }
+                catch(error){
+                    signature.value = "Please enter the correct RSA private key!";
+                    console.log(error);
+                }
+            }
         })
 
 
@@ -170,7 +240,25 @@
                 else 
                     delete data.timestamp;
             })
+        
+</script>
 
+<script id="copyRequestUrl" type="text/javascript">
+
+    let copytRequest = document.querySelector("button#copytRequest");
+    
+    copytRequest.addEventListener("click", ()=>{
+        
+        navigator.clipboard.writeText(requesturl.value).then(()=>{
+            let span_message = document.querySelector("span.copytRequest");
+            span_message.style="visibility:visible";
+            setTimeout(function(){span_message.style="visibility:hidden"},800);
+        })
+    })
+
+</script>
+
+<script id="timestampRunningFunction" type='text/javascript'>
 
         let int = setInterval(()=>{
             timestamp.value = Date.now();
@@ -193,7 +281,7 @@
                 int = setInterval(()=>{
                             timestamp.value = Date.now();
                         },10)
-                //console.log("out2:",timeStop)
+               //console.log("out2:",timeStop)
             }
             
         })
@@ -207,7 +295,6 @@
             timeStop=false;
             //console.log("blur:",timeStop)
         })
-
-    </script>
+</script>
 
 </html>
