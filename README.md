@@ -17,3 +17,5 @@ signature tool for work
 (I was manually added the web worker script for the RSA generation, not used the forge.js imbedded web worker function, because I want to learn and familiar with this feature.)
 
 2023-01-09 update: Re-designed the style of the signature tool, [signingTool.html](https://lzjzhuanyong.github.io/signingTool.html), and support signing the query string to get signature with the RSA format key.
+
+2023-01-10 update: Add a new tool for timestamp format conversion.
