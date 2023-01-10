@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            html, body {height:99%}
+            div.root {display:grid;}
+            h2 {margin:16px 0 0 16px}
+            div.main {margin:16px 0 0 16px;}
+
+            p {display:inline-block; width: 25%}
+
+            div.button {display:flex;}
+            span {writing-mode:vertical-rl}
+
+            input#timestamp {width: 30%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            
+            input#regular {width: 30%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            
+            select#timestamp_unit {width: 22%;display:inline-block;padding: 8px 16px; margin: 16px 16px 1px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
+            select#timezone {width: 22%;display:inline-block;padding: 8px 16px; margin: 16px 16px 1px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
+            button#to {width: 8%; height: 100%; padding: 5px 10px; margin: 16px 8px 24px 25%; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+            button#from {width: 8%; height: 100%; padding: 5px 10px; margin: 16px 8px 30px 15%; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        </style>
+    </head>    
+    <body>
+        <div class="root">
+            <div>
+                <h2>Timestamp Format Conversion Tool</h2>
+            </div>
+            
+            <div class="main">
+                <div>
+                    <p>Current timestamp:</p>
+                        
+                    
+                    <p id="current"></p>
+
+                </div>
+                <div class="timestamp">
+                    <p>UNIX timestamp:</p>
+                    <input id="timestamp" type="text">
+                    <select id="timestamp_unit">
+                        <option value="s">second(s)</option>
+                        <option value="ms" selected>milisecond(ms)</option>
+                    </select>
+                </div>
+                <div class="button">
+                    
+                    <button id="to" type="button"><span>=></span></button>
+                    
+                    <button id="from" type="button"><span><=</span></button>
+                    
+                </div>
+                <div>
+                    <p>Regular time format:</p>
+                    <input id="regular" type="text" >
+                    <select id="timezone">
+                        <option value="UTC-11">UTC-11</option>
+                        <option value="UTC-10">UTC-10</option>
+                        <option value="UTC-9">UTC-9</option>
+                        <option value="UTC-8">UTC-8</option>
+                        <option value="UTC-7">UTC-7</option>
+                        <option value="UTC-6">UTC-6</option>
+                        <option value="UTC-5">UTC-5</option>
+                        <option value="UTC-4">UTC-4</option>
+                        <option value="UTC-3">UTC-3</option>
+                        <option value="UTC-2">UTC-2</option>
+                        <option value="UTC-1">UTC-1</option>
+                        <option value="UTC+0" selected>UTC</option>
+                        <option value="UTC+1">UTC+1</option>
+                        <option value="UTC+2">UTC+2</option>
+                        <option value="UTC+3">UTC+3</option>
+                        <option value="UTC+4">UTC+4</option>
+                        <option value="UTC+5">UTC+5</option>
+                        <option value="UTC+6">UTC+6</option>
+                        <option value="UTC+7">UTC+7</option>
+                        <option value="UTC+8">UTC+8</option>
+                        <option value="UTC+9">UTC+9</option>
+                        <option value="UTC+10">UTC+10</option>
+                        <option value="UTC+11">UTC+11</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+        
+        let timestamp = document.querySelector("input#timestamp");
+        let regular = document.querySelector("input#regular");
+
+        let to = document.querySelector("button#to");
+        let from = document.querySelector("button#from");
+
+        let timestamp_unit = document.querySelector("select#timestamp_unit");
+        let timezone = document.querySelector("select#timezone");
+
+        let current = document.querySelector("#current");
+
+        let tempTime = Date.now();
+        current.innerHTML = tempTime;
+        timestamp.value = tempTime;
+        tempTime = new Date(tempTime);
+        regular.value = tempTime.toISOString().replace("T"," ").replace(/\.[\d]+Z$/g,"")
+        setInterval(function(){current.innerHTML=Date.now()},1000)
+        
+        to.addEventListener("click",()=>{
+
+            if(timestamp_unit.value === "ms"){
+                
+                let t = parseInt(timestamp.value) + parseInt(timezone.value.replace("UTC","")) * 3600 * 1000;
+                let time = new Date(t);
+
+                regular.value = time.toISOString().replace("T"," ").replace(/\.[\d]+Z$/g,"");
+                console.log(regular.value + " " + timezone.value.replace(/\+[0]$/g,""))
+            }
+            else if(timestamp_unit.value === "s"){
+                let t = parseInt(timestamp.value) * 1000 + parseInt(timezone.value.replace("UTC","")) * 3600 * 1000;
+                let time = new Date(t);
+
+                regular.value = time.toISOString().replace("T"," ").replace(/\.[\d]+Z$/g,"");
+                console.log(regular.value + " " + timezone.value.replace(/\+[0]$/g,""))
+            }
+            
+        })
+
+        from.addEventListener("click",()=>{
+            if(timestamp_unit.value === "ms"){
+                let s = regular.value + ".000" + " " + timezone.value;
+                timestamp.value = Date.parse(s)
+                console.log(timestamp.value)
+            }
+            else if(timestamp_unit.value === "s"){
+                let s = regular.value + ".000" + " " + timezone.value;
+                timestamp.value = Date.parse(s)/1000
+                console.log(timestamp.value)
+            }
+        })
+        console.log(Date.parse("2023/01/01 03:00:00.111 UTC+4"))
+        
+    </script>
+</html>
