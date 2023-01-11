@@ -5,12 +5,12 @@
     <script src="forge.min.js"></script>
     <style>
         html,body {height: 99%}
-        div.root {display:grid; height: 100%;grid-template-rows: 49% 2% 39%;}
-        div.upper {display:grid; grid-template-columns: 54% 2% 39%;}
+        div.root {display:grid; height: 100%;grid-template-rows: 54% 1% 39%;}
+        div.upper {display:grid; grid-template-columns: 54% 1% 39%;}
+        
 
-
-        h1 {margin: 16px 0px 16px 8px;}
-        h4 {margin: 16px 0px 16px 8px;}
+        h1 {margin: 16px 0px 8px 8px;}
+        h4 {margin: 16px 0px 0px 8px;}
 
         hr.middleline {border: 1px solid lightgrey; background-color: lightgrey;}
         hr.upper {height: 95%;width: 2px;border:none}
@@ -23,14 +23,14 @@
 
         p.example {margin: 8px 0px 0px 8px;font-size: 14px;}
 
-        textarea#customized {width: 90%; height:20%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        textarea#customized {width: 95%; height:20%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
 
         div.recvWindow {margin: 0px 0px 0px 8px;display:inline-block;}
         div.timestamp {display:inline-block;}
         input#recvWindow {width: 50%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
         input#timestamp {width: 50%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
 
-        button#sign_button {width: 15%; height: 10%; padding: 5px 10px; margin: 24px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button#sign_button {width: 15%; height: 10%; padding: 5px 10px; margin: 8px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
         button#sign_button:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
         button#sign_button:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
         
@@ -45,7 +45,7 @@
         div.requesturl {height:30%;}
         textarea#requesturl {width: 93%; height:80%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
 
-        button#copytRequest {width: 10%; height: 10%; padding: 5px 10px; margin: 16px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button#copytRequest {width: 10%; height: 10%; padding: 5px 10px; margin: 4px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
         button#copytRequest:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
         button#copytRequest:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
         span.copytRequest {background-color:black;color:white;visibility: hidden;}
@@ -69,7 +69,6 @@
                         <h4>Customized the querystring:</4>
                     </div>
                     <div>
-                        <p class="example">example:</p>
                         <p class="example">symbol=BTCUSDT&side=BUY&type=LIMIT&quantity=1&price=300&newOrderRespType=FULL</p>
                     </div>
                     <div>
