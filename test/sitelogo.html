@@ -4,9 +4,9 @@
 <head>
 
   <style>
-    html, body {background-color: black;}
+    html, body {background-color: transparent; margin:0px;}
 
-    section { position: absolute;width: 100%;height: 100%;display: flex;justify-content: center;}
+    .logosection { position: relative;background-color: transparent;}
 
     .logo { margin: auto; }
     .vert { transform-origin: center bottom; }
@@ -16,16 +16,20 @@
 
     .text-fills path, .line {opacity: 0}
     
+    .svg-container {position: absolute;z-index: 1; background-color: black;}
+
+    .canvas-container {position: absolute;z-index: 2;}
   </style>
 
 </head>
 <body>
     
-        <section>
-            <svg class="logo" width="100%" height="448" viewBox="0 0 1024 448">
-                <g transform="scale(0.5,0.5)">
-                <g transform="translate(280.000000, 380.000000)" fill="#FFF" stroke="0">
-                    <g class="bn1">
+    <section class="logosection">
+    
+        <div class="svg-container">
+            <svg id="svg1logo" width="100%">
+                <g id="logolocation">
+                    <g class="bn1" fill="#FFF" stroke="0" transform="translate(140, 0.000000)">
                         <path d="M0,127.279 L28.284,98.995 L29.284,99.995 L1,128.279 L0,127.279 Z" data-d="M0,127.279 L28.284,98.995 L56.569,127.279 L28.284,155.563 L0,127.279 Z"></path>
                         <path d="M49.497,77.782 L127.279,0 L128.279,1 L50.497,78.782 L49.497,77.782 Z" data-d="M49.497,77.782 L127.779,0 L127.779,56.569 L77.782,106.066 L49.497,77.782 Z"></path>
                         <path d="M127.278,0 L205.061,77.782 L204.061,78.782 L126.279,1 L127.278,0 Z" data-d="M126.778,0 L205.061,77.782 L176.777,106.066 L126.778,56.570 L126.778,0 Z"></path>
@@ -35,141 +39,168 @@
                         <path d="M98.995,127.279 L127.779,155.563 L128.779,154.563 L99.995,126.279 Z" data-d="M98.995,127.279 L127.779,155.563 L155.563,127.279 L127.779,98.995 Z"></path>
                         <path d="M126.779,155.563 L155.563,127.279 L154.563,126.279 L125.779,154.563 L126.779,155.563 Z" data-d="M126.779,155.563 L155.563,127.279 L126.779,98.995 L98.995,127.279 L126.779,155.563 Z"></path>
                     </g>
-                </g>
-                <g class="text-fills">
-                    <g class="API" transform="translate(200,395)" fill="#FFF">
-                        <path d="M60,0 L0,120 L30,120 L45,90 L115,90 L130,120 L160,120 L100,0 L60,0z M60,60 L75,30 L85,30 L100,60 L60,60z" id="A"></path>
-                        <path d="M180,0 L180,120 L210,120 L210,72.426 L278.787,72.426 L300,51.213 L300,21.213 L278.787,0 L180,0z M210,25 L263.432,25 L270,31.568 L270,40.867 L263.432,47.426 L210,47.426 L210,25z" id="P"></path>
-                        <path d="M320,0 L320,20 L350,20 L350,100 L320,100 L320,120 L420,120 L420,100 L390,100 L390,20 L420,20 L420,0, L320,0z" id="I"></path>
+                    <g class="text-fills">
+                        <g class="API" transform="translate(60,0)" fill="#FFF">
+                            <path d="M60,0 L0,120 L30,120 L45,90 L115,90 L130,120 L160,120 L100,0 L60,0z M60,60 L75,30 L85,30 L100,60 L60,60z" id="A"></path>
+                            <path d="M180,0 L180,120 L210,120 L210,72.426 L278.787,72.426 L300,51.213 L300,21.213 L278.787,0 L180,0z M210,25 L263.432,25 L270,31.568 L270,40.867 L263.432,47.426 L210,47.426 L210,25z" id="P"></path>
+                            <path d="M320,0 L320,20 L350,20 L350,100 L320,100 L320,120 L420,120 L420,100 L390,100 L390,20 L420,20 L420,0, L320,0z" id="I"></path>
+                        </g>
+                        <g class="team" transform="translate(0, 150)" fill="#FFF">
+                            <path d="M45,0 L45,15 L16,15 L0,35 L45,35 L45,68 L61,84 L110,84 L130,64 L70,64 L70,35 L110,35 L130,15 L70,15 L70,0" id="t"></path>
+                            <path d="M254,36 L254,16 L238,2.55795385e-13 L158,2.4158453e-13 L142,16 L142,68 L158,84 L234,84 L254,64 L162,64 L162,20 L234,20 L234,32 L194,32 L174,52 L238,52 L254,36 Z" id="e"></path>
+                            <path d="M266,48 L266,68 L282,84 L362,84 L378,68 L378,16 L362,0 L286,0 L266,20 L358,20 L358,64 L286,64 L286,52 L326,52 L346,32 L282,32 L266,48 Z" id="a"></path>
+                            <path d="M410,20 L410,84 L390,84 L390,16 L400,0 L518,0 L534,16 L534,84 L514,84 L514,20 L472,20 L472,84 L452,84 L452,20 L410,20 Z" id="m"></path>
+                        </g>
                     </g>
-                    <g class="team" transform="translate(128, 540)" fill="#FFF">
-                        <path d="M45,0 L45,15 L16,15 L0,35 L45,35 L45,68 L61,84 L110,84 L130,64 L70,64 L70,35 L110,35 L130,15 L70,15 L70,0" id="t"></path>
-                        <path d="M254,36 L254,16 L238,2.55795385e-13 L158,2.4158453e-13 L142,16 L142,68 L158,84 L234,84 L254,64 L162,64 L162,20 L234,20 L234,32 L194,32 L174,52 L238,52 L254,36 Z" id="e"></path>
-                        <path d="M266,48 L266,68 L282,84 L362,84 L378,68 L378,16 L362,0 L286,0 L266,20 L358,20 L358,64 L286,64 L286,52 L326,52 L346,32 L282,32 L266,48 Z" id="a"></path>
-                        <path d="M410,20 L410,84 L390,84 L390,16 L400,0 L518,0 L534,16 L534,84 L514,84 L514,20 L472,20 L472,84 L452,84 L452,20 L410,20 Z" id="m"></path>
-                    </g>
-                </g>
-                <g stroke="#FFF" stroke-width="2" fill="none" fill-rule="evenodd">
-                    <g class="API" transform="translate(200,395)">
-                        <!-- Letter A -->
-                        <path d="M60,0 L0,120" class="line diag-left"></path>
-                        <path d="M0,120 L30,120" class="line hori"></path>
-                        <path d="M30,120 L45,90" class="line diag-left"></path>
-                        <path d="M45,90 L115,90" class="line hori"></path>
-                        <path d="M115,90 L130,120" class="line diag-right"></path>
-                        <path d="M130,120 L160,120" class="line hori"></path>
-                        <path d="M160,120 L100,0" class="line diag-right"></path>
-                        <path d="M100,0 L60,0" class="line hori"></path>
-                        <path d="M60,60 L75,30" class="line diag-left"></path>
-                        <path d="M75,30 L85,30" class="line hori"></path>
-                        <path d="M85,30 L100,60" class="line diag-right"></path>
-                        <path d="M100,60 L60,60" class="line hori"></path>
-                        <!-- letter P -->
-                        <path d="M180,0 L180,120" class="line vert"></path>
-                        <path d="M180,120 L210,120" class="line hori"></path>
-                        <path d="M210,120 L210,72.426" class="line vert"></path>
-                        <path d="M210,72.426 L278.787,72.426" class="line hori"></path>
-                        <path d="M278.787,72.426 L300,51.213" class="line diag-left"></path>
-                        <path d="M300,51.213 L300,21.213" class="line vert"></path>
-                        <path d="M300,21.213 L278.787,0" class="line diag-right"></path>
-                        <path d="M278.787,0 L180,0" class="line hori"></path>
-                        <path d="M210,25 L263.432,25" class="line hori"></path>
-                        <path d="M263.432,25 L270,31.568" class="line diag-right"></path>
-                        <path d="M270,31.568 L270,40.867" class="line vert"></path>
-                        <path d="M270,40.867 L263.432,47.426" class="line diag-left"></path>
-                        <path d="M263.432,47.426 L210,47.426" class="line hori"></path>
-                        <path d="M210,47.426 L210,25" class="line vert"></path>
-                        <!-- letter I -->
-                        <path d="M320,0 L320,20" class="line vert"></path>
-                        <path d="M320,20 L350,20" class="line hori"></path>
-                        <path d="M350,20 L350,100" class="line vert"></path>
-                        <path d="M350,100 L320,100" class="line hori"></path>
-                        <path d="M320,100 L320,120" class="line vert"></path>
-                        <path d="M320,120 L420,120" class="line hori"></path>
-                        <path d="M420,120 L420,100" class="line vert"></path>
-                        <path d="M420,100 L390,100" class="line hori"></path>
-                        <path d="M390,100 L390,20" class="line vert"></path>
-                        <path d="M390,20 L420,20" class="line hori"></path>
-                        <path d="M420,20 L420,0" class="line vert"></path>
-                        <path d="M420,0 L320,0" class="line hori"></path>
-                    </g>
-                    <g class="team" transform="translate(128, 540)">
-                        
-                        <!-- letter t -->
-                        <path d="M45,0 L45,15" class="line vert"></path>
-                        <path d="M45,15 L16,15" class="line hori"></path>
-                        <path d="M16,15 L0,35" class="line diag-left"></path>
-                        <path d="M0,35 L45,35" class="line hori"></path>
-                        <path d="M45,35 L45,68" class="line vert"></path>
-                        <path d="M45,68 L61,84" class="line diag-left"></path>
-                        <path d="M61,84 L110,84" class="line hori"></path>
-                        <path d="M110,84 L130,64" class="line diag-right"></path>
-                        <path d="M130,64 L70,64" class="line hori"></path>
-                        <path d="M70,64 L70,35" class="line vert"></path>
-                        <path d="M70,35 L110,35" class="line hori"></path>
-                        <path d="M110,35 L130,15" class="line diag-right"></path>
-                        <path d="M130,15 L70,15" class="line hori"></path>
-                        <path d="M70,15 L70,0" class="line vert"></path>
-                        <path d="M70,0 L45,0" class="line hori"></path>
+                    <g stroke="#FFF" stroke-width="2" fill="none" fill-rule="evenodd">
+                        <g class="API" transform="translate(60,0)">
+                            <!-- Letter A -->
+                            <path d="M60,0 L0,120" class="line diag-left"></path>
+                            <path d="M0,120 L30,120" class="line hori"></path>
+                            <path d="M30,120 L45,90" class="line diag-left"></path>
+                            <path d="M45,90 L115,90" class="line hori"></path>
+                            <path d="M115,90 L130,120" class="line diag-right"></path>
+                            <path d="M130,120 L160,120" class="line hori"></path>
+                            <path d="M160,120 L100,0" class="line diag-right"></path>
+                            <path d="M100,0 L60,0" class="line hori"></path>
+                            <path d="M60,60 L75,30" class="line diag-left"></path>
+                            <path d="M75,30 L85,30" class="line hori"></path>
+                            <path d="M85,30 L100,60" class="line diag-right"></path>
+                            <path d="M100,60 L60,60" class="line hori"></path>
+                            <!-- letter P -->
+                            <path d="M180,0 L180,120" class="line vert"></path>
+                            <path d="M180,120 L210,120" class="line hori"></path>
+                            <path d="M210,120 L210,72.426" class="line vert"></path>
+                            <path d="M210,72.426 L278.787,72.426" class="line hori"></path>
+                            <path d="M278.787,72.426 L300,51.213" class="line diag-left"></path>
+                            <path d="M300,51.213 L300,21.213" class="line vert"></path>
+                            <path d="M300,21.213 L278.787,0" class="line diag-right"></path>
+                            <path d="M278.787,0 L180,0" class="line hori"></path>
+                            <path d="M210,25 L263.432,25" class="line hori"></path>
+                            <path d="M263.432,25 L270,31.568" class="line diag-right"></path>
+                            <path d="M270,31.568 L270,40.867" class="line vert"></path>
+                            <path d="M270,40.867 L263.432,47.426" class="line diag-left"></path>
+                            <path d="M263.432,47.426 L210,47.426" class="line hori"></path>
+                            <path d="M210,47.426 L210,25" class="line vert"></path>
+                            <!-- letter I -->
+                            <path d="M320,0 L320,20" class="line vert"></path>
+                            <path d="M320,20 L350,20" class="line hori"></path>
+                            <path d="M350,20 L350,100" class="line vert"></path>
+                            <path d="M350,100 L320,100" class="line hori"></path>
+                            <path d="M320,100 L320,120" class="line vert"></path>
+                            <path d="M320,120 L420,120" class="line hori"></path>
+                            <path d="M420,120 L420,100" class="line vert"></path>
+                            <path d="M420,100 L390,100" class="line hori"></path>
+                            <path d="M390,100 L390,20" class="line vert"></path>
+                            <path d="M390,20 L420,20" class="line hori"></path>
+                            <path d="M420,20 L420,0" class="line vert"></path>
+                            <path d="M420,0 L320,0" class="line hori"></path>
+                        </g>
+                        <g class="team" transform="translate(0, 150)">
+                            
+                            <!-- letter t -->
+                            <path d="M45,0 L45,15" class="line vert"></path>
+                            <path d="M45,15 L16,15" class="line hori"></path>
+                            <path d="M16,15 L0,35" class="line diag-left"></path>
+                            <path d="M0,35 L45,35" class="line hori"></path>
+                            <path d="M45,35 L45,68" class="line vert"></path>
+                            <path d="M45,68 L61,84" class="line diag-left"></path>
+                            <path d="M61,84 L110,84" class="line hori"></path>
+                            <path d="M110,84 L130,64" class="line diag-right"></path>
+                            <path d="M130,64 L70,64" class="line hori"></path>
+                            <path d="M70,64 L70,35" class="line vert"></path>
+                            <path d="M70,35 L110,35" class="line hori"></path>
+                            <path d="M110,35 L130,15" class="line diag-right"></path>
+                            <path d="M130,15 L70,15" class="line hori"></path>
+                            <path d="M70,15 L70,0" class="line vert"></path>
+                            <path d="M70,0 L45,0" class="line hori"></path>
 
-                        <!-- letter e -->
-                        <path d="M254,36 L254,16" class="line vert"></path>
-                        <path d="M254,16 L238,2.55795385e-13" class="line diag-right"></path>
-                        <path d="M238,2.55795385e-13, L158,2.4158453e-13" class="line hori"></path>
-                        <path d="M158,2.4158453e-13, 142,16" class="line diag-left"></path>
-                        <path d="M142,16 L142,68" class="line vert"></path>
-                        <path d="M142,68 L158,84" class="line diag-right"></path>
-                        <path d="M158,84 L234,84" class="line hori"></path>
-                        <path d="M234,84 L254,64" class="line diag-left"></path>
-                        <path d="M254,64 L162,64" class="line hori"></path>
-                        <path d="M162,64 L162,20" class="line vert"></path>
-                        <path d="M162,20 L234,20" class="line hori"></path>
-                        <path d="M234,20 L234,32" class="line vert"></path>
-                        <path d="M234,32 L194,32" class="line hori"></path>
-                        <path d="M194,32 L174,52" class="line diag-left"></path>
-                        <path d="M174,52 L238,52" class="line hori"></path>
-                        <path d="M238,52 L254,36" class="line diag-left"></path>
-                        <!-- letter a -->
-                        <path d="M266,48 L266,68" class="line vert"></path>
-                        <path d="M266,68 L282,84" class="line diag-right"></path>
-                        <path d="M282,84 L362,84" class="line hori"></path>
-                        <path d="M362,84 L378,68" class="line diag-left"></path>
-                        <path d="M378,68 L378,16" class="line vert"></path>
-                        <path d="M378,16 L362,0" class="line diag-right"></path>
-                        <path d="M362,0 L286,0" class="line hori"></path>
-                        <path d="M286,0 L266,20" class="line diag-left"></path>
-                        <path d="M266,20 L358,20" class="line hori"></path>
-                        <path d="M358,20 L358,64" class="line vert"></path>
-                        <path d="M358,64 L286,64" class="line hori"></path>
-                        <path d="M286,64 L286,52" class="line vert"></path>
-                        <path d="M286,52 L326,52" class="line hori"></path>
-                        <path d="M326,52 L346,32" class="line diag-left"></path>
-                        <path d="M346,32 L282,32" class="line hori"></path>
-                        <path d="M282,32 L266,48" class="line diag-left"></path>
-                        <!-- letter m -->
-                        <path d="M410,20 L410,84" class="line vert"></path>
-                        <path d="M410,84 L390,84" class="line hori"></path>
-                        <path d="M390,84 L390,16" class="line vert"></path>
-                        <path d="M390,16 L400,0" class="line diag-left"></path>
-                        <path d="M400,0 L518,0" class="line hori"></path>
-                        <path d="M518,0 L534,16" class="line diag-right"></path>
-                        <path d="M534,16 L534,84" class="line vert"></path>
-                        <path d="M534,84 L514,84" class="line hori"></path>
-                        <path d="M514,84 L514,20" class="line vert"></path>
-                        <path d="M514,20 L472,20" class="line hori"></path>
-                        <path d="M472,20 L472,84" class="line vert"></path>
-                        <path d="M472,84 L452,84" class="line hori"></path>
-                        <path d="M452,84 L452,20" class="line vert"></path>
-                        <path d="M452,20 L410,20" class="line hori"></path>
+                            <!-- letter e -->
+                            <path d="M254,36 L254,16" class="line vert"></path>
+                            <path d="M254,16 L238,2.55795385e-13" class="line diag-right"></path>
+                            <path d="M238,2.55795385e-13, L158,2.4158453e-13" class="line hori"></path>
+                            <path d="M158,2.4158453e-13, 142,16" class="line diag-left"></path>
+                            <path d="M142,16 L142,68" class="line vert"></path>
+                            <path d="M142,68 L158,84" class="line diag-right"></path>
+                            <path d="M158,84 L234,84" class="line hori"></path>
+                            <path d="M234,84 L254,64" class="line diag-left"></path>
+                            <path d="M254,64 L162,64" class="line hori"></path>
+                            <path d="M162,64 L162,20" class="line vert"></path>
+                            <path d="M162,20 L234,20" class="line hori"></path>
+                            <path d="M234,20 L234,32" class="line vert"></path>
+                            <path d="M234,32 L194,32" class="line hori"></path>
+                            <path d="M194,32 L174,52" class="line diag-left"></path>
+                            <path d="M174,52 L238,52" class="line hori"></path>
+                            <path d="M238,52 L254,36" class="line diag-left"></path>
+                            <!-- letter a -->
+                            <path d="M266,48 L266,68" class="line vert"></path>
+                            <path d="M266,68 L282,84" class="line diag-right"></path>
+                            <path d="M282,84 L362,84" class="line hori"></path>
+                            <path d="M362,84 L378,68" class="line diag-left"></path>
+                            <path d="M378,68 L378,16" class="line vert"></path>
+                            <path d="M378,16 L362,0" class="line diag-right"></path>
+                            <path d="M362,0 L286,0" class="line hori"></path>
+                            <path d="M286,0 L266,20" class="line diag-left"></path>
+                            <path d="M266,20 L358,20" class="line hori"></path>
+                            <path d="M358,20 L358,64" class="line vert"></path>
+                            <path d="M358,64 L286,64" class="line hori"></path>
+                            <path d="M286,64 L286,52" class="line vert"></path>
+                            <path d="M286,52 L326,52" class="line hori"></path>
+                            <path d="M326,52 L346,32" class="line diag-left"></path>
+                            <path d="M346,32 L282,32" class="line hori"></path>
+                            <path d="M282,32 L266,48" class="line diag-left"></path>
+                            <!-- letter m -->
+                            <path d="M410,20 L410,84" class="line vert"></path>
+                            <path d="M410,84 L390,84" class="line hori"></path>
+                            <path d="M390,84 L390,16" class="line vert"></path>
+                            <path d="M390,16 L400,0" class="line diag-left"></path>
+                            <path d="M400,0 L518,0" class="line hori"></path>
+                            <path d="M518,0 L534,16" class="line diag-right"></path>
+                            <path d="M534,16 L534,84" class="line vert"></path>
+                            <path d="M534,84 L514,84" class="line hori"></path>
+                            <path d="M514,84 L514,20" class="line vert"></path>
+                            <path d="M514,20 L472,20" class="line hori"></path>
+                            <path d="M472,20 L472,84" class="line vert"></path>
+                            <path d="M472,84 L452,84" class="line hori"></path>
+                            <path d="M452,84 L452,20" class="line vert"></path>
+                            <path d="M452,20 L410,20" class="line hori"></path>
+                        </g>
                     </g>
-                </g>
                 </g>
             </svg>
-        </section>
-        <canvas class="fireworks"></canvas>
+        </div>
+        <div class="canvas-container">
+            <canvas class="fireworks"></canvas>
+        </div>
+    </section>
+</body>        
 <!-- partial -->
   <script src='./anime.min.js'></script>
   <script>
+  
+    let centerX = window.innerWidth / 2;
+    let centerY = (window.innerHeight - 5) / 2;
+
+    let svg1logo = document.querySelector("#svg1logo");
+
+    function setSVGsize(){
+        svg1logo.style.width = window.innerWidth ;
+        svg1logo.style.height = window.innerHeight -5;
+        let setViewBox = "0 0 " + window.innerWidth + " " + (window.innerHeight -5)
+        svg1logo.setAttribute('viewBox', setViewBox);
+    }
+
+    setSVGsize()
+    window.addEventListener('resize', setSVGsize, false);
+    
+    let logolocation = document.querySelector("#logolocation")
+    const transform = document.createElementNS('http://www.w3.org/2000/svg', 'svg').createSVGTransform();
+    function setlogolocation(event){
+        logolocation.transform.baseVal.clear();
+        transform.setTranslate(centerX, centerY - 100);
+        logolocation.transform.baseVal.appendItem(transform);
+    }
+    setlogolocation()
 
     let logoCycle = false;
     let logoAnimation = anime({
@@ -267,6 +298,10 @@
 
         var canvasEl = document.querySelector('.fireworks');
         var ctx = canvasEl.getContext('2d');
+
+        
+
+        
         var numberOfParticules = 30;
         var pointerX = 0;
         var pointerY = 0;
@@ -274,130 +309,129 @@
         var colors = ['#F9C100', '#EDFF00', '#B9BB2D', '#C8FF00','#FFB000'];
 
         function setCanvasSize() {
-        canvasEl.width = window.innerWidth * 2;
-        canvasEl.height = window.innerHeight * 2;
-        canvasEl.style.width = window.innerWidth + 'px';
-        canvasEl.style.height = window.innerHeight + 'px';
-        canvasEl.getContext('2d').scale(2, 2);
+            canvasEl.width = window.innerWidth * 2;
+            canvasEl.height = (window.innerHeight - 5) * 2;
+            canvasEl.style.width = window.innerWidth + 'px';
+            canvasEl.style.height = (window.innerHeight - 5) + 'px';
+            canvasEl.getContext('2d').scale(2, 2);
         }
 
         function updateCoords(e) {
-        pointerX = e.clientX || e.touches[0].clientX;
-        pointerY = e.clientY || e.touches[0].clientY;
+            pointerX = e.clientX || e.touches[0].clientX;
+            pointerY = e.clientY || e.touches[0].clientY;
         }
 
         function setParticuleDirection(p) {
-        var angle = anime.random(0, 360) * Math.PI / 180;
-        var value = anime.random(50, 180);
-        var radius = [-1, 1][anime.random(0, 1)] * value;
-        return {
-            x: p.x + radius * Math.cos(angle),
-            y: p.y + radius * Math.sin(angle)
-        }
+            var angle = anime.random(0, 360) * Math.PI / 180;
+            var value = anime.random(50, 180);
+            var radius = [-1, 1][anime.random(0, 1)] * value;
+            return {
+                x: p.x + radius * Math.cos(angle),
+                y: p.y + radius * Math.sin(angle)
+            }
         }
 
         function createParticule(x,y) {
-        var p = {};
-        p.x = x;
-        p.y = y;
-        p.color = colors[anime.random(0, colors.length - 1)];
-        p.radius = anime.random(16, 32);
-        p.endPos = setParticuleDirection(p);
-        p.draw = function() {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI, true);
-            ctx.fillStyle = p.color;
-            ctx.fill();
-        }
-        return p;
+            var p = {};
+            p.x = x;
+            p.y = y;
+            p.color = colors[anime.random(0, colors.length - 1)];
+            p.radius = anime.random(16, 32);
+            p.endPos = setParticuleDirection(p);
+            p.draw = function() {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI, true);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+            }
+            return p;
         }
 
         function createCircle(x,y) {
-        var p = {};
-        p.x = x;
-        p.y = y;
-        p.color = '#FFF';
-        p.radius = 0.1;
-        p.alpha = .5;
-        p.lineWidth = 6;
-        p.draw = function() {
-            ctx.globalAlpha = p.alpha;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI, true);
-            ctx.lineWidth = p.lineWidth;
-            ctx.strokeStyle = p.color;
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-        }
-        return p;
+            var p = {};
+            p.x = x;
+            p.y = y;
+            p.color = '#FFF';
+            p.radius = 0.1;
+            p.alpha = .5;
+            p.lineWidth = 6;
+            p.draw = function() {
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI, true);
+                ctx.lineWidth = p.lineWidth;
+                ctx.strokeStyle = p.color;
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+            return p;
         }
 
         function renderParticule(anim) {
-        for (var i = 0; i < anim.animatables.length; i++) {
-            anim.animatables[i].target.draw();
-        }
+            for (var i = 0; i < anim.animatables.length; i++) {
+                anim.animatables[i].target.draw();
+            }
         }
 
         function animateParticules(x, y) {
-        var circle = createCircle(x, y);
-        var particules = [];
-        for (var i = 0; i < numberOfParticules; i++) {
-            particules.push(createParticule(x, y));
-        }
-        anime.timeline().add({
-            targets: particules,
-            x: function(p) { return p.endPos.x; },
-            y: function(p) { return p.endPos.y; },
-            radius: 0.1,
-            duration: anime.random(1200, 1800),
-            easing: 'easeOutExpo',
-            update: renderParticule
-        })
-            .add({
-            targets: circle,
-            radius: anime.random(80, 160),
-            lineWidth: 0,
-            alpha: {
-            value: 0,
-            easing: 'linear',
-            duration: anime.random(600, 800),  
-            },
-            duration: anime.random(1200, 1800),
-            easing: 'easeOutExpo',
-            update: renderParticule,
-            
-        },100);
+            var circle = createCircle(x, y);
+            var particules = [];
+            for (var i = 0; i < numberOfParticules; i++) {
+                particules.push(createParticule(x, y));
+            }
+            anime.timeline().add({
+                targets: particules,
+                x: function(p) { return p.endPos.x; },
+                y: function(p) { return p.endPos.y; },
+                radius: 0.1,
+                duration: anime.random(1200, 1800),
+                easing: 'easeOutExpo',
+                update: renderParticule
+            })
+                .add({
+                targets: circle,
+                radius: anime.random(80, 160),
+                lineWidth: 0,
+                alpha: {
+                value: 0,
+                easing: 'linear',
+                duration: anime.random(600, 800),  
+                },
+                duration: anime.random(1200, 1800),
+                easing: 'easeOutExpo',
+                update: renderParticule,
+                
+            },100);
         }
 
         var render = anime({
-        duration: Infinity,
-        update: function() {
-            ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-        }
+            duration: Infinity,
+            update: function() {
+                ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+            }
         });
 
         document.addEventListener(tap, function(e) {
-        window.human = true;
-        render.play();
-        updateCoords(e);
-        animateParticules(pointerX, pointerY);
+            window.human = true;
+            render.play();
+            updateCoords(e);
+            animateParticules(pointerX, pointerY);
         }, false);
 
-        var centerX = window.innerWidth / 2;
-        var centerY = window.innerHeight / 2;
+        
 
 
         let startTime = Date.now();
         function autoClick() {
-        if (window.human) return;
-        animateParticules(
-            anime.random(centerX-50, centerX+50), 
-            anime.random(centerY-50, centerY+50)
-        );
+            if (window.human) return;
+            animateParticules(
+                anime.random(centerX-50, centerX+50), 
+                anime.random(centerY-50, centerY+50)
+            );
 
-        if(Date.now() - startTime < 19000){
-            anime({duration: 300}).finished.then(autoClick);
-        }
+            if(Date.now() - startTime < 20000){
+                anime({duration: 300}).finished.then(autoClick);
+            }
         
         }
 
@@ -405,5 +439,9 @@
         setCanvasSize();
         window.addEventListener('resize', setCanvasSize, false);
     </script>
-</body>
+    <script>
+        console.log("window height",window.innerHeight)
+        console.log("window width",window.innerWidth)
+    </script>
+
 </html>
