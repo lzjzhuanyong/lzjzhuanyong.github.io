@@ -29,6 +29,7 @@
             button.main-operator:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
 
             button.generate {height: 15%; display:block;position:relative; top:-36px}
+	    button.send {width: 10%; margin-top: 0px;}
             
             ul {list-style-type: none; margin: 8px 0 0 0; padding:0; background-color: #f1f1f1;letter-spacing: -8px;}
             li {display: inline-block; margin: 0; padding:0; width:150px;}
@@ -178,7 +179,7 @@
                                         <tr>
                                             <td><input type="checkbox" checked></td>
                                             <td><input class="" type="text" value="timeInForce"></td>
-                                            <td><input type="text" value="IOC"></td>
+                                            <td><input type="text" value="GTC"></td>
                                             <td><button>-</button></td>
                                         </tr>
                                         <tr>
@@ -235,7 +236,7 @@
                 <div class="upper">
                     <p>Request:  </p>
                     <textarea id="request_message"></textarea>
-                    <button class="main-operator" id="ws_send">Send</button>
+                    <button class="send main-operator" id="ws_send">Send</button>
                 </div>
                 <div>
                     <hr></hr>
