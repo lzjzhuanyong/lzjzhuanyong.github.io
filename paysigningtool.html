@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>pay signature tool</title>
+        <style>
+            html,body {height: 99%}
+            div.root {display:grid; height: 100%;grid-template-rows: 74% 1% 20%;}
+            div.upper {display:grid; grid-template-columns: 59% 2% 30%; height:100%;}
+            div.lower {height:100%;}
+            
+    
+            h1 {margin: 16px 0px 8px 8px;}
+            h4 {margin: 16px 0px 0px 8px;}
+    
+            hr.middleline {border: 1px solid lightgrey; background-color: lightgrey;}
+            hr.upper {height: 95%;width: 2px;border:none}
+            hr.root {width: 93%;height:2px;margin:8px 0px 0px 8px;border:none}
+
+            div.baseurl {margin: 16px 0px 0px 8px;display:inline-block;width: 45%;}
+            div.path {display:inline-block;width: 45%;}
+            
+            input#baseurl {width: 65%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            input#baseurl:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            input#baseurl:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            
+            input#path {width: 65%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            input#path:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            input#path:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+    
+            
+            .customized {height:55%;}
+            .customized1 {height:85%}
+            textarea#customized {width: 95%; height:100%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+            textarea#customized:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+            textarea#customized:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+            
+            
+            div.timestamp {margin: 0px 0px 0px 8px;display:inline-block;  width:40%}
+            div.nonce {display:inline-block; width: 50%; }
+            
+            input#nonce {width: 70%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            input#nonce:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            input#nonce:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            
+            input#timestamp {width: 50%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            input#timestamp:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+            input#timestamp:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+    
+            
+            button#sign_button {width: 15%; height: 10%; padding: 5px 10px; margin: 8px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;position:relative;z-index: 1;}
+            button#sign_button:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+            button#sign_button:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
+            
+            h4.secretKey {display:inline-block}
+            select#keyFormat {display:inline-block;padding: 8px 16px; margin: 16px 16px 1px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
+    
+            div.areaSecKey {height:80%}
+            input#secretKey {width: 100%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+            input#secretKey:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+            input#secretKey:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+    
+            input#signature {width: 93%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            
+            .refresh-button {width: 1.5em;height: 1.5em;color: rgb(183, 189, 198); cursor: pointer;vertical-align: middle;}
+            .refresh-button:hover {color:grey}
+            .refresh-button:active {color:#555}
+            
+            .refresh-button.rotate { animation: spin 1s linear; animation-iteration-count: 1;}
+            @keyframes spin { to { transform: rotate(360deg);} }
+
+
+            .eye {box-sizing: border-box;margin: 0px 0px 0px 4px;min-width: 0px;color: rgb(183, 189, 198);font-size: 24px;fill: rgb(183, 189, 198);width: 1em;height: 1em;vertical-align:middle;}
+            .eye:hover {color:grey}
+        </style>
+    </head>
+    <body>
+        <div class="root">
+            <div class="upper">
+                <div class="left">
+                    <h1>Pay Signature Tool</h1>
+                    <div>
+                        <div class="baseurl">
+                            base url: <input type='text' id="baseurl" value="https://bpay.binanceapi.com/">
+                        </div>
+                        <div class="path">
+                            path: <input type='text' id="path" value="binancepay/openapi/v2/order">
+                        </div>
+                    </div>
+                    <div class="customized">
+                        <div>
+                            <h4>body: </h4>
+                        </div>
+                        <div class="customized1">
+                            <textarea id='customized'>
+                                {"merchantId":"98765987","subMerchantId":"98765987","merchantTradeNo":"9825382937292","totalFee":25.17,"productDetail":"Greentea ice cream cone","currency":"BUSD","returnUrl":"","tradeType":"APP","productType":"Food","productName":"Ice Cream"}
+                            </textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="timestamp">
+                            timestamp: <input type="text" id='timestamp' value="1611232922428">
+                            <span>
+                                <svg class="refresh-button" id="refresh_timestamp" fill="currentColor" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="487.23px" height="487.23px" viewBox="0 0 487.23 487.23" style="enable-background:new 0 0 487.23 487.23;" xml:space="preserve">
+                                    <g>
+                                        <path d="M55.323,203.641c15.664,0,29.813-9.405,35.872-23.854c25.017-59.604,83.842-101.61,152.42-101.61    c37.797,0,72.449,12.955,100.23,34.442l-21.775,3.371c-7.438,1.153-13.224,7.054-14.232,14.512    c-1.01,7.454,3.008,14.686,9.867,17.768l119.746,53.872c5.249,2.357,11.33,1.904,16.168-1.205    c4.83-3.114,7.764-8.458,7.796-14.208l0.621-131.943c0.042-7.506-4.851-14.144-12.024-16.332    c-7.185-2.188-14.947,0.589-19.104,6.837l-16.505,24.805C370.398,26.778,310.1,0,243.615,0C142.806,0,56.133,61.562,19.167,149.06    c-5.134,12.128-3.84,26.015,3.429,36.987C29.865,197.023,42.152,203.641,55.323,203.641z"/>
+                                        <path d="M464.635,301.184c-7.27-10.977-19.558-17.594-32.728-17.594c-15.664,0-29.813,9.405-35.872,23.854    c-25.018,59.604-83.843,101.61-152.42,101.61c-37.798,0-72.45-12.955-100.232-34.442l21.776-3.369    c7.437-1.153,13.223-7.055,14.233-14.514c1.009-7.453-3.008-14.686-9.867-17.768L49.779,285.089    c-5.25-2.356-11.33-1.905-16.169,1.205c-4.829,3.114-7.764,8.458-7.795,14.207l-0.622,131.943    c-0.042,7.506,4.85,14.144,12.024,16.332c7.185,2.188,14.948-0.59,19.104-6.839l16.505-24.805    c44.004,43.32,104.303,70.098,170.788,70.098c100.811,0,187.481-61.561,224.446-149.059    C473.197,326.043,471.903,312.157,464.635,301.184z"/>
+                                    </g>
+                                </svg>
+                            </span>      
+                        </div>
+                        <div class="nonce">
+                            nonce: <input type="text" id="nonce" value="5RhaTrZPhknNv0kDSA2UQ67cPMVNS4sA">
+                            <span>
+                                <svg class="refresh-button" id="refresh_nonce" fill="currentColor" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="487.23px" height="487.23px" viewBox="0 0 487.23 487.23" style="enable-background:new 0 0 487.23 487.23;" xml:space="preserve">
+                                    <g>
+                                        <path d="M55.323,203.641c15.664,0,29.813-9.405,35.872-23.854c25.017-59.604,83.842-101.61,152.42-101.61    c37.797,0,72.449,12.955,100.23,34.442l-21.775,3.371c-7.438,1.153-13.224,7.054-14.232,14.512    c-1.01,7.454,3.008,14.686,9.867,17.768l119.746,53.872c5.249,2.357,11.33,1.904,16.168-1.205    c4.83-3.114,7.764-8.458,7.796-14.208l0.621-131.943c0.042-7.506-4.851-14.144-12.024-16.332    c-7.185-2.188-14.947,0.589-19.104,6.837l-16.505,24.805C370.398,26.778,310.1,0,243.615,0C142.806,0,56.133,61.562,19.167,149.06    c-5.134,12.128-3.84,26.015,3.429,36.987C29.865,197.023,42.152,203.641,55.323,203.641z"/>
+                                        <path d="M464.635,301.184c-7.27-10.977-19.558-17.594-32.728-17.594c-15.664,0-29.813,9.405-35.872,23.854    c-25.018,59.604-83.843,101.61-152.42,101.61c-37.798,0-72.45-12.955-100.232-34.442l21.776-3.369    c7.437-1.153,13.223-7.055,14.233-14.514c1.009-7.453-3.008-14.686-9.867-17.768L49.779,285.089    c-5.25-2.356-11.33-1.905-16.169,1.205c-4.829,3.114-7.764,8.458-7.795,14.207l-0.622,131.943    c-0.042,7.506,4.85,14.144,12.024,16.332c7.185,2.188,14.948-0.59,19.104-6.839l16.505-24.805    c44.004,43.32,104.303,70.098,170.788,70.098c100.811,0,187.481-61.561,224.446-149.059    C473.197,326.043,471.903,312.157,464.635,301.184z"/>
+                                    </g>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+    
+                        <button id='sign_button' type="button">Sign</button>
+                    </div>
+                    
+                </div>
+                <hr class="upper middleline">
+                <div class="right">
+                    <div>
+                        <h4 class="secretKey">Standard Secret Key:
+                            <span class="standard_secret_key_eye">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="eye close"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.94 5.06l16 16 2.12-2.12-2.446-2.447L23 12l-5.555-5.69a7.566 7.566 0 00-9.883-.87L5.06 2.94 2.939 5.06zm6.747 2.506a5 5 0 016.747 6.747L9.687 7.566z" fill="currentColor"></path><path d="M1 12l2.29-2.346 10.198 10.198a7.574 7.574 0 01-6.933-2.162L1 12z" fill="currentColor"></path></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="eye open"><path d="M12 14.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M6.555 6.31L1 12l5.555 5.69a7.572 7.572 0 0010.89 0L23 12l-5.555-5.69a7.572 7.572 0 00-10.89 0zM17 12a5 5 0 11-10 0 5 5 0 0110 0z" fill="currentColor"></path></svg>
+                                
+                            </span>
+                        </h4> 
+                    </div>
+                    <div class="areaSecKey">
+                        <input type="text" id='secretKey' value="uahr4nhailyq55yubuhuncnprfac73bcbz2qfafsevic1jruwunioxtoaozy122f">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <hr class="root middleline">
+            </div>
+            
+            <div class="lower">
+                <div>
+                    <h4>BinancePay-Signature:</h4> 
+                    <input type='text' id='signature'>
+                </div>
+                
+                
+            </div>
+        </div>
+
+        <span name="return_home_box">
+            <style name="wrap-home-box">
+                div.home-box {
+                    height:50px; width:50px;text-align: center;border-radius: 12px; box-sizing: border-box; outline:none;
+                    left:40px;
+                    top:0px;
+                    position:relative;
+                    background-color: lightgrey;
+                    pointer-events: auto;
+                }
+    
+                div.wrap-home-box {
+                    
+                    height:50px; width:52px;
+                    position:fixed;
+                    right:0px;
+                    bottom: 30px;
+                    overflow: hidden;
+                    pointer-events: none;
+                }
+    
+                div.home-box a div {height:50px; width:50px;}
+                div.home-box a {font-weight: bold;text-decoration:none}
+                div.home-box:hover {
+                    top: 0px;
+                    background-color: rgb(252, 213, 53);
+                    border-radius: 8px;
+                    animation: slide-right 1s;
+                    animation-iteration-count: 1;
+                    animation-fill-mode: forwards;
+                }
+    
+                @keyframes slide-right {
+                    100% {left: 0px;}
+                }
+            </style>
+            <div class="wrap-home-box">
+               <div class="home-box">
+                    <a href="./"><div>Back <br> Home</div></a>
+               </div>
+            </div>
+        </span>
+        
+
+    </body>
+
+    <script name="style_eye_open_close" type="text/javascript">
+        
+
+        let standard_secret_key_eye = document.querySelector(".standard_secret_key_eye");
+        
+        let secretKey = document.querySelector('#secretKey');
+
+        standard_secret_key_eye.firstElementChild.style.display = "none";
+        
+
+        let standard_secret_key_eye_switch = true;
+        
+        standard_secret_key_eye.addEventListener("click",()=>{
+            if(standard_secret_key_eye_switch){
+                standard_secret_key_eye.children[0].style.display = "inline-block";
+                standard_secret_key_eye.children[1].style.display = "none";
+                standard_secret_key_eye_switch = false; 
+                secretKey.type = "password";
+            }
+            else{
+                
+                standard_secret_key_eye.children[1].style.display = "inline-block";
+                standard_secret_key_eye.children[0].style.display = "none";
+                standard_secret_key_eye_switch = true; 
+                secretKey.type = "text";
+            }
+                
+        })
+
+
+    </script>
+
+    <script name="signature" type="text/javascript">
+
+        let sign_button = document.querySelector('#sign_button');
+
+        let timestamp = document.querySelector("#timestamp");
+        let nonce = document.querySelector("#nonce");
+        let customized = document.querySelector("#customized");
+
+        
+
+        let signature = document.querySelector('#signature');
+
+        sign_button.addEventListener("click",(event)=>{
+            
+            let payload = timestamp.value + "\n" + nonce.value + "\n" + JSON.stringify(JSON.parse(customized.value)) + "\n";
+            
+            console.log(payload)
+            let payload_encode = new TextEncoder();
+                        
+            let secret_key_encode = new TextEncoder();
+
+            (async function (){
+                console.log(secretKey.value)
+                
+                let secret_key = await import_secretKey(secret_key_encode.encode(secretKey.value));
+                
+                let signature_result = await window.crypto.subtle.sign("HMAC", secret_key, payload_encode.encode(payload))
+                
+                signature.value = buf2hex(signature_result).toUpperCase()
+            })()
+            
+            
+        })
+
+        async function import_secretKey(rawKey){
+            
+            rawKey = rawKey.length ? rawKey : new Uint8Array(64);
+
+            return window.crypto.subtle.importKey(
+                "raw",
+                rawKey,
+                {
+                    "name": "HMAC",
+                    "hash": "SHA-512"
+                },
+                true,
+                ["sign","verify"]
+            )
+        }
+
+        function buf2hex(buffer) { // buffer is an ArrayBuffer
+            
+            return [...new Uint8Array(buffer)]
+                .map(x => x.toString(16).padStart(2, '0'))
+                .join('');
+        }
+    </script>
+
+    <script name="style_refresh_nonce" type="text/javascript">
+
+        let refresh_nonce = document.querySelector("#refresh_nonce");
+        
+        
+        refresh_nonce.addEventListener("click",()=>{
+            nonce.value = random_string();
+            refresh_nonce.classList.add('rotate');
+            setTimeout(()=>{
+                refresh_nonce.classList.remove('rotate');
+            },500)
+        })
+
+        function random_string(k){
+            k = k || 32;
+            let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            let c = '';
+            for(let i=0; i<k; i++){
+                c += characters.charAt(Math.floor(Math.random()*characters.length));
+            }
+            return c
+        }
+    </script>
+
+    <script name="style_timestamp_refresh_function" type='text/javascript'>
+        let refresh_timestamp = document.querySelector("#refresh_timestamp");
+        refresh_timestamp.addEventListener("click",(event)=>{
+            timestamp.value = Date.now();
+            refresh_timestamp.classList.add('rotate');
+            setTimeout(()=>{
+                refresh_timestamp.classList.remove('rotate');
+            },500)
+        })
+    </script>
+
+    
+</html>
