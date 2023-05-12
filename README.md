@@ -23,3 +23,5 @@ signature tool for work
 2023-05-07 update: Create a new tool to test websocket api, [wsapitool.html](https://lzjzhuanyong.github.io/wsapitool.html). And add a back home page box button for all tools.
 
 2023-05-11 update: Create a pay signature tool [paysigningtool.html](https://lzjzhuanyong.github.io/paysigningtool.html). The pay signature algorithm is HMAC SHA512, it is different from the public endpoint signature method(HMAC SHA256/RSASSA-PKCS1-v1.5). And the main change of this tool is aborting import an external encrypt library like the forge.js that used by previous tools, and only use the browser built in web api interfaces, subtle crypto method to sign the data.
+
+2023-05-12 update: Add a new style to hide the secret key and private key on the page for signature tool [signingTool.html](https://lzjzhuanyong.github.io/signingTool.html)
