@@ -1,7 +1,9 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="uft-8">
+    <title>signature tool</title>
     <script src="forge.min.js"></script>
     <style>
         html,body {height: 99%}
@@ -49,17 +51,22 @@
         input#timestamp:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
 
         
-        button#sign_button {width: 15%; height: 10%; padding: 5px 10px; margin: 8px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button#sign_button {width: 15%; height: 10%; padding: 5px 10px; margin: 8px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;position:relative;z-index: 1;}
         button#sign_button:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
         button#sign_button:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
         
         h4.secretKey {display:inline-block}
         select#keyFormat {display:inline-block;padding: 8px 16px; margin: 16px 16px 1px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
 
-        div.areaSecKey {height:80%}
-        textarea#secretKey {width: 95%; height:95%; padding: 12px 8px; margin: 8px 0px 0px 8px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
-        textarea#secretKey:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
-        textarea#secretKey:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+        div.areaSecKey {height:80%;}
+        div.rsa_secret_key {height:100%;display:none}
+        textarea#rsa_secret_key {width: 95%; height:95%; padding: 12px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        textarea#rsa_secret_key:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+        textarea#rsa_secret_key:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+
+        input#hmac_secret_key {width: 95%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+        input#hmac_secret_key:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
+        input#hmac_secret_key:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
 
         input#signature {width: 93%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
 
@@ -70,6 +77,9 @@
         button#copytRequest:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
         button#copytRequest:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
         span.copytRequest {background-color:black;color:white;visibility: hidden;}
+    
+        .eye {box-sizing: border-box;margin: 0px 0px 0px 4px;min-width: 0px;color: rgb(183, 189, 198);font-size: 24px;fill: rgb(183, 189, 198);width: 1em;height: 1em;vertical-align:middle;}
+        .eye:hover {color:grey}
     </style>
 </head>
 <body>
@@ -119,9 +129,19 @@
                         <option value="HMAC">HMAC Key</option>
                         <option value="RSA">RSA Key</option>
                     </select>
+                    <span class="secret_key_eye">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="eye"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.94 5.06l16 16 2.12-2.12-2.446-2.447L23 12l-5.555-5.69a7.566 7.566 0 00-9.883-.87L5.06 2.94 2.939 5.06zm6.747 2.506a5 5 0 016.747 6.747L9.687 7.566z" fill="currentColor"></path><path d="M1 12l2.29-2.346 10.198 10.198a7.574 7.574 0 01-6.933-2.162L1 12z" fill="currentColor"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="eye"><path d="M12 14.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M6.555 6.31L1 12l5.555 5.69a7.572 7.572 0 0010.89 0L23 12l-5.555-5.69a7.572 7.572 0 00-10.89 0zM17 12a5 5 0 11-10 0 5 5 0 0110 0z" fill="currentColor"></path></svg>
+                    </span>
                 </div>
+                
                 <div class="areaSecKey">
-                    <textarea id='secretKey'></textarea>
+                    <div class="hmac_secret_key">
+                        <input type="text" id="hmac_secret_key">
+                    </div>
+                    <div class="rsa_secret_key">
+                        <textarea id='rsa_secret_key' ></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -143,7 +163,8 @@
         </div>
     </div>
     
-    <style>
+    <span name="return_home_box">
+        <style name="style_wrap-home-box">
             div.home-box {
                 height:50px; width:50px;text-align: center;border-radius: 12px; box-sizing: border-box; outline:none;
                 left:40px;
@@ -177,16 +198,49 @@
             @keyframes slide-right {
                 100% {left: 0px;}
             }
-     </style>
+        </style>
         <div class="wrap-home-box">
-           <div class="home-box">
+            <div class="home-box">
                 <a href="./"><div>Back <br> Home</div></a>
-           </div>
+            </div>
         </div>
+    </span>
+    
     
 </body>
 
-<script type='text/javascript'>
+<script>
+    let secret_key_eye = document.querySelector(".secret_key_eye");
+        
+    let hmac_secret_key = document.querySelector("#hmac_secret_key");
+    let rsa_secret_key = document.querySelector("#rsa_secret_key");
+
+    secret_key_eye.firstElementChild.style.display = "none";
+    
+
+    let secret_key_eye_switch = true;
+    
+    secret_key_eye.addEventListener("click",()=>{
+        if(secret_key_eye_switch){
+            secret_key_eye.children[0].style.display = "inline-block";
+            secret_key_eye.children[1].style.display = "none";
+            secret_key_eye_switch = false; 
+            hmac_secret_key.type = "password";
+            rsa_secret_key.style = "-webkit-text-security: disc;"
+        }
+        else{
+            
+            secret_key_eye.children[1].style.display = "inline-block";
+            secret_key_eye.children[0].style.display = "none";
+            secret_key_eye_switch = true; 
+            hmac_secret_key.type = "text";
+            rsa_secret_key.style = "-webkit-text-security: none;"
+        }
+            
+    })
+</script>
+
+<script name="signing_function" type='text/javascript'>
 
         const hmac = forge.hmac.create();
         const pki = forge.pki;
@@ -205,7 +259,8 @@
         let customized = document.querySelector("#customized");
 
         //secretKey to generate the signature (HMAC SHA256)
-        let secretKey = document.querySelector('#secretKey');
+        //let secretKey = document.querySelector('#secretKey');
+        
 
         //calculation start
         let data = {};
@@ -216,12 +271,8 @@
 
         let keyFormat = document.querySelector("select#keyFormat");
 
-       
-
-
-        keyFormat.addEventListener("change",()=>{
-            console.log(keyFormat.value);
-        })
+        const textencoder = new TextEncoder();
+        const textdecoder = new TextDecoder("utf-8");
 
 
         sign_button.addEventListener('click',()=>{
@@ -259,16 +310,29 @@
                 //console.log(secretKey.value.replace(/[\s]+$/g,''))
                 
                 //eliminate the space and line break character with regex
-                hmac.start('sha256',secretKey.value.replace(/[\s]+$/g,''));
+                hmac.start('sha256',hmac_secret_key.value.replace(/[\s]+$/g,''));
                 hmac.update(queryparameter);
                 signature.value = hmac.digest().toHex();
 
                 let querystring = queryparameter+"&"+"signature="+signature.value;
                 requesturl.value = baseurl.value+path.value+'?'+querystring;
+
+                (async function (){
+                    
+                    let secret_key_encode = textencoder.encode(hmac_secret_key.value.replace(/[\s]+$/g,''))
+                    
+                    let rawkey = secret_key_encode.length ? secret_key_encode : new Uint8Array(64);
+                    let secret_key = await window.crypto.subtle.importKey("raw",rawkey,{"name": "HMAC", "hash":"SHA-256"}, true, ["sign","verify"]);
+
+                    let signature = await window.crypto.subtle.sign("HMAC", secret_key, textencoder.encode(queryparameter));
+                    console.log(buf2hex(signature))
+
+                })()
+
             }
             else if(keyFormat.value === "RSA"){
                 try{
-                    let privateKey = pki.privateKeyFromPem(secretKey.value);
+                    let privateKey = pki.privateKeyFromPem(rsa_secret_key.value);
                     let md = forge.md.sha256.create();
                     md.update(queryparameter,"utf8");
                     
@@ -276,6 +340,39 @@
                     
                     let querystring = queryparameter+"&"+"signature="+signature.value;
                     requesturl.value = baseurl.value+path.value+'?'+querystring;
+
+
+                    (async function(){
+
+                        let rsakey = rsa_secret_key.value.replace(/[\s]+$/g,'');
+                        const pemHeader = "-----BEGIN PRIVATE KEY-----";
+                        const pemFooter = "-----END PRIVATE KEY-----";
+                        const pemContents = rsakey.substring(pemHeader.length, rsakey.length - pemFooter.length);
+                        // 将字符串通过 base64 解码为二进制数据
+                        
+                        const binaryDerString = window.atob(pemContents);
+                        // 将二进制字符串转换为 ArrayBuffer
+                        const binaryDer = str2ab(binaryDerString);
+                        console.log(binaryDer)
+                        let private_key = await window.crypto.subtle.importKey(
+                                "pkcs8",
+                                binaryDer,
+                                {
+                                    name: "RSASSA-PKCS1-v1_5",
+                                    hash: "SHA-256",
+                                },
+                                true,
+                                ["sign"]
+                            );
+                        console.log(private_key)
+                        let signature = await window.crypto.subtle.sign("RSASSA-PKCS1-v1_5", private_key, textencoder.encode(queryparameter))
+                        
+                        
+                        console.log(encodeURIComponent(btoa(ab2binarystr(signature))))
+                        
+                    })()
+
+
                 }
                 catch(error){
                     signature.value = "Please enter the correct RSA private key!";
@@ -303,6 +400,53 @@
                     delete data.timestamp;
             })
         
+</script>
+
+<script>
+    function buf2hex(buffer) { // buffer is an ArrayBuffer
+            
+            return [...new Uint8Array(buffer)]
+                .map(x => x.toString(16).padStart(2, '0'))
+                .join('');
+        }
+</script>
+
+<script>
+        function str2ab(str) {
+            const buf = new ArrayBuffer(str.length);
+            const bufView = new Uint8Array(buf);
+            for (let i = 0, strLen = str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        }
+
+        function ab2binarystr(buf){
+            const bufView = new Uint8Array(buf);
+            let str = '';
+            for(let i=0; i< bufView.length; i++){
+                str += String.fromCharCode(bufView[i])
+            }
+            return str;
+        }
+</script>
+
+<script name="style_change_key_format" type="text/javascript">
+    
+    let div_hmac_secret_key = document.querySelector(".hmac_secret_key");
+    let div_rsa_secret_key = document.querySelector(".rsa_secret_key");
+
+    keyFormat.addEventListener("change",()=>{
+            console.log(keyFormat.value);
+            if(keyFormat.value === "HMAC"){
+                div_hmac_secret_key.style.display = "block";
+                div_rsa_secret_key.style.display = "none";
+            }
+            else if(keyFormat.value === "RSA"){
+                div_hmac_secret_key.style.display = "none";
+                div_rsa_secret_key.style.display = "block";
+            }
+        })
 </script>
 
 <script id="copyRequestUrl" type="text/javascript">
