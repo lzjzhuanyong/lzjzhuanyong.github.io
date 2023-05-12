@@ -124,7 +124,7 @@
             <hr class="upper middleline">
             <div class="right">
                 <div>
-                    <h4 class="secretKey">Secret Key/Private Key:</h4> 
+                    <h4 class="secretKey">Secret Key</h4> 
                     <select id="keyFormat">
                         <option value="HMAC">HMAC Key</option>
                         <option value="RSA">RSA Key</option>
@@ -209,7 +209,7 @@
     
 </body>
 
-<script>
+<script name="style_eye_open_and_close" type="text/javascript">
     let secret_key_eye = document.querySelector(".secret_key_eye");
         
     let hmac_secret_key = document.querySelector("#hmac_secret_key");
@@ -272,7 +272,7 @@
         let keyFormat = document.querySelector("select#keyFormat");
 
         const textencoder = new TextEncoder();
-        const textdecoder = new TextDecoder("utf-8");
+        
 
 
         sign_button.addEventListener('click',()=>{
@@ -402,7 +402,7 @@
         
 </script>
 
-<script>
+<script name="buff2hex" type="text/javascript">
     function buf2hex(buffer) { // buffer is an ArrayBuffer
             
             return [...new Uint8Array(buffer)]
@@ -411,7 +411,7 @@
         }
 </script>
 
-<script>
+<script name="arraybuffer_and_string_conversion" type="text/javascript">
         function str2ab(str) {
             const buf = new ArrayBuffer(str.length);
             const bufView = new Uint8Array(buf);
@@ -435,16 +435,19 @@
     
     let div_hmac_secret_key = document.querySelector(".hmac_secret_key");
     let div_rsa_secret_key = document.querySelector(".rsa_secret_key");
+    let h4_secretKey = document.querySelector(".secretKey");
 
     keyFormat.addEventListener("change",()=>{
             console.log(keyFormat.value);
             if(keyFormat.value === "HMAC"){
                 div_hmac_secret_key.style.display = "block";
                 div_rsa_secret_key.style.display = "none";
+                h4_secretKey.textContent = "Secret Key:";
             }
             else if(keyFormat.value === "RSA"){
                 div_hmac_secret_key.style.display = "none";
                 div_rsa_secret_key.style.display = "block";
+                h4_secretKey.textContent = "Private Key:";
             }
         })
 </script>
