@@ -11,6 +11,8 @@
             
             div.upper {margin-right: 2px;}
             div.down {margin-right: 2px;}
+
+            
             div.left_bottom {height:50%;}
             
             h3 {margin:0 0 0 8px}
@@ -19,13 +21,13 @@
             hr.middleline {border: 1px solid lightgrey; background-color: lightgrey; height: 95%;width: 2px;border:none}
 
             input#wsurl {display:block}
-            label {display:block;margin: 8px 0 0 8px;}
+            label {display:block;margin: 4px 0 0 8px;}
 
             label.label_secret_key {display:inline-block}
             select#keyFormat {display:inline-block;padding: 8px 16px; margin: 16px 16px 1px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
 
             
-            input.main-info {width: 65%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
+            input.main-info {width: 65%; padding: 8px 8px; margin: 4px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
             input.main-info:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
             input.main-info:focus {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
 
@@ -40,7 +42,8 @@
             button.main-operator:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
             button.main-operator:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
 
-            button.generate {height: 15%; display:block;position:relative; top:-36px}
+            
+            button.generate {width: 20%; margin-top: 0px;}
             button.send {width: 10%; margin-top: 0px;}
             
             
@@ -50,10 +53,10 @@
             a.nav:hover {color: white; background-color: #555 !important;}
             a.nav:active {background-color: rgb(252, 213, 53) !important;}
             
-            div#Params_page {display:block; height: 85%;}
-            div#Keys_page {display:none; height:85%}
+            div#Params_page {display:block; height: 83%;}
+            div#Keys_page {display:none; height: 85%;}
 
-            textarea#request_message {width: 100%; height:75%; padding: 12px 8px; margin: 8px 0px 0px 2px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+            textarea#request_message {width: 100%; height:70%; padding: 12px 8px; margin: 8px 0px 0px 2px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
             textarea#request_message:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
             textarea#request_message:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
             
@@ -62,14 +65,14 @@
             div#output {width:100%; height: 94%; border:2px solid #afaeb0; margin:2px;  border-radius: 4px; box-sizing: border-box; overflow: auto;}
         </style>
         <style>
-            .raw_text {width: 95%; height: 90%; display:none; padding: 12px 8px; margin: 8px 0px 0px 2px;}
+            .raw_text {width: 95%; height: 90%; display:none; padding: 4px 4px; margin: 4px 0px 0px 4px;}
             textarea#raw_textarea {width:100%; height:78%; padding: 0px; margin: 0px; display:inline-block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
             textarea#raw_textarea:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
             textarea#raw_textarea:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
             
-            .raw_table {width: 95%; height: 90%; display:block; padding: 4px 8px; margin: 8px 0px 0px 2px;}
+            .raw_table {width: 95%; height: 90%; display:block; padding: 4px 4px; margin: 4px 0px 0px 4px;}
 
-            .table-wrapper { width: 100%; padding: 0; margin:0;overflow: auto;}
+            .table-wrapper { width: 100%; height: 90%;padding: 0px; margin:0px; overflow: auto;}
 
             table { border-collapse: collapse; padding: 0px; margin: 0px; width: 100%;}
 
@@ -91,7 +94,7 @@
             td button {display:block;margin:0 auto}
 
             .add_table_row_button {text-align: center;}
-            #add_table_row_button {width:10%}
+            #add_table_row_button {width:10%;height:50%}
             
         </style>
 
@@ -160,7 +163,9 @@
                     </nav>
 
                     <div id="Params_page">
-                        <h3><p>Query Params: <a id="raw_switch" href="javascript:void(0)">Raw</a></p></h3>
+                        <h4>Query Params: 
+                            <a id="raw_switch" href="javascript:void(0)">Raw</a>
+                        </h4>
                         <div class="raw_table">
                             <div class="table-wrapper">
                                 <table id="query_params_table">
@@ -194,7 +199,7 @@
                                         <tr>
                                             <td><input type="checkbox" checked></td>
                                             <td><input class="" type="text" value="timeInForce"></td>
-                                            <td><input type="text" value="IOC"></td>
+                                            <td><input type="text" value="GTC"></td>
                                             <td><button>-</button></td>
                                         </tr>
                                         <tr>
@@ -221,7 +226,7 @@
                         </div>
                     </div>
                     <div id="Keys_page">
-                        <h3><p>Keys:</p></h3>
+                        <h4>Keys:</h4>
                         <div>
                             <label for="api_key">API Key:</label>
                             <input class="main-info" type="text" id="api_key" value="">
@@ -250,9 +255,7 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <button class="generate main-operator" id="generate_request">generate<br>request</button>
-                    </div>
+                    
                 </div>
             </div>
             <div>
@@ -262,7 +265,10 @@
                 <div class="upper">
                     <h4>Request:  </h4>
                     <textarea id="request_message"></textarea>
-                    <button class="send main-operator" id="ws_send">Send</button>
+                    <div class="two-buttons">
+                        <button class="generate main-operator" id="generate_request">generate request</button>
+                        <button class="send main-operator" id="ws_send">Send</button>
+                    </div>
                 </div>
                 <div>
                     <hr></hr>
