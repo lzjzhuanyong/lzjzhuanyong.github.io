@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -544,6 +545,7 @@
                 console.log("The connection is closed or couldn't be opened.");
                 
                 ws_send.removeEventListener("click",send_message);
+                ws_send.addEventListener('click',remind_linking);
             })
 
             binancewss.addEventListener("error",errorEvent=>{
@@ -554,10 +556,17 @@
             //console.log(wa)
             function send_message(){
                 //console.log(request_message.value)
-                wa = JSON.parse(request_message.value);
-                wa = JSON.stringify(wa);
-                console.log(wa)
-                binancewss.send(wa);
+                try{
+                    wa = JSON.parse(request_message.value);
+                    wa = JSON.stringify(wa);
+                    console.log(wa)
+                    binancewss.send(wa);
+                }
+                catch(error){
+                    insertMessage("Not a valid JSON request.");
+                    console.log(error);
+                }
+                
             }
             ws_send.addEventListener('click',send_message)
 
