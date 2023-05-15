@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -59,10 +58,10 @@
         select#keyFormat {display:inline-block;padding: 8px 16px; margin: 16px 16px 1px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
 
         div.areaSecKey {height:80%;}
-        div.asym_secret_key {height:100%;display:none}
-        textarea#asym_secret_key {width: 95%; height:95%; padding: 12px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
-        textarea#asym_secret_key:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
-        textarea#asym_secret_key:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+        div.asym_private_key {height:100%;display:none}
+        textarea#asym_private_key {width: 95%; height:95%; padding: 12px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        textarea#asym_private_key:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+        textarea#asym_private_key:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
 
         input#hmac_secret_key {width: 95%; padding: 8px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; outline:none}
         input#hmac_secret_key:hover {border: 1px solid #ccc; border-radius: 4px; box-shadow: 0px 0px 0px 2px lightgrey}
@@ -140,8 +139,8 @@
                     <div class="hmac_secret_key">
                         <input type="text" id="hmac_secret_key">
                     </div>
-                    <div class="asym_secret_key">
-                        <textarea id='asym_secret_key' ></textarea>
+                    <div class="asym_private_key">
+                        <textarea id='asym_private_key' ></textarea>
                     </div>
                 </div>
             </div>
@@ -214,7 +213,7 @@
     let secret_key_eye = document.querySelector(".secret_key_eye");
         
     let hmac_secret_key = document.querySelector("#hmac_secret_key");
-    let asym_secret_key = document.querySelector("#asym_secret_key");
+    let asym_private_key = document.querySelector("#asym_private_key");
 
     secret_key_eye.firstElementChild.style.display = "none";
     
@@ -227,7 +226,7 @@
             secret_key_eye.children[1].style.display = "none";
             secret_key_eye_switch = false; 
             hmac_secret_key.type = "password";
-            asym_secret_key.style = "-webkit-text-security: disc;"
+            asym_private_key.style = "-webkit-text-security: disc;"
         }
         else{
             
@@ -235,7 +234,7 @@
             secret_key_eye.children[0].style.display = "none";
             secret_key_eye_switch = true; 
             hmac_secret_key.type = "text";
-            asym_secret_key.style = "-webkit-text-security: none;"
+            asym_private_key.style = "-webkit-text-security: none;"
         }
             
     })
@@ -333,7 +332,7 @@
             }
             else if(keyFormat.value === "RSA"){
                 try{
-                    let privateKey = pki.privateKeyFromPem(asym_secret_key.value);
+                    let privateKey = pki.privateKeyFromPem(asym_private_key.value);
                     let md = forge.md.sha256.create();
                     md.update(queryparameter,"utf8");
                     
@@ -345,7 +344,7 @@
 
                     (async function(){
 
-                        let rsakey = asym_secret_key.value.replace(/[\s]+$/g,'');
+                        let rsakey = asym_private_key.value.replace(/[\s]+$/g,'');
                         const pemHeader = "-----BEGIN PRIVATE KEY-----";
                         const pemFooter = "-----END PRIVATE KEY-----";
                         const pemContents = rsakey.substring(pemHeader.length, rsakey.length - pemFooter.length);
@@ -383,7 +382,7 @@
             else if(keyFormat.value === "ED25519"){
 
                 try{
-                    let ed25519_prvkey_pem = asym_secret_key.value.replace(/[\s]+$/g,'');
+                    let ed25519_prvkey_pem = asym_private_key.value.replace(/[\s]+$/g,'');
                     let ed25519_prvkey = ed25519_pem2prvbuf(ed25519_prvkey_pem);
 
                     let sig = pki.ed25519.sign({
@@ -403,7 +402,7 @@
                 }
             }
 
-            
+
         })
 
 
@@ -478,19 +477,19 @@
 <script name="style_change_key_format" type="text/javascript">
     
     let div_hmac_secret_key = document.querySelector(".hmac_secret_key");
-    let div_asym_secret_key = document.querySelector(".asym_secret_key");
+    let div_asym_private_key = document.querySelector(".asym_private_key");
     let h4_secretKey = document.querySelector(".secretKey");
 
     keyFormat.addEventListener("change",()=>{
             console.log(keyFormat.value);
             if(keyFormat.value === "HMAC"){
                 div_hmac_secret_key.style.display = "block";
-                div_asym_secret_key.style.display = "none";
+                div_asym_private_key.style.display = "none";
                 h4_secretKey.textContent = "Secret Key:";
             }
             else if(keyFormat.value === "RSA" || keyFormat.value === "ED25519"){
                 div_hmac_secret_key.style.display = "none";
-                div_asym_secret_key.style.display = "block";
+                div_asym_private_key.style.display = "block";
                 h4_secretKey.textContent = "Private Key:";
             }
         })
