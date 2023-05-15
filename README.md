@@ -28,4 +28,4 @@ signature tool for work
 
 2023-05-13 update: websocket api test tool supports rsa key, fix some bugs
 
-2023-05-15 update: new feature of key generator to support generating ed25519 key. new feature of signature tool to support ed25519 key to sign request
+2023-05-15 update: new feature of key generator to support generating ed25519 key. new feature of signature tool to support ed25519 key to sign request. New feature of websocket api tool to support ed25519 key to sign request
