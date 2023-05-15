@@ -8,14 +8,14 @@
         
         div.main {display:grid; grid-template-columns: 44% 12% 44%;}
    
-        div.bitsSelection {margin: 8px 0px 0px 8px;display:inline-block}
+        div.type_selection {margin: 8px 0px 0px 8px;display:inline-block}
         div.button_generator {display: inline-block}
 
         button.button_generator {padding: 8px 10px; margin: 8px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
         button.button_generator:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
         button.button_generator:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
         
-        select#bitsSelection {padding: 8px 16px; margin: 16px 16px 1px 0px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
+        select#type_selection {padding: 8px 16px; margin: 16px 16px 1px 0px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
 
         select#prvKeyFormat {padding: 8px 16px; margin: 0px 16px 0px 16px; border: 1px solid #ccc; border-radius: 4px; cursor: auto;}
 
@@ -85,19 +85,20 @@
         @keyframes ball-spin-fade-loader {50% {opacity: 0.3;transform: scale(0.4);} 100% {opacity: 1;transform: scale(1); } }
     </style>
     <script src="forge.min.js"></script>
-    <title>RSA Key Generator Tool</title>
+    <title>Asymmetric Key Generator Tool</title>
 </head>
 <body>
     <div id="root">
         
         <div class="header">
             <div>
-                <h2>RSA Key Generator Tool</h2>
+                <h2>Asymmetric Key Generator Tool</h2>
             </div>
-            <div class="bitsSelection">
-                <select id="bitsSelection">
-                    <option value="2048">2048 bits</option>
-                    <option value="4096">4096 bits</option>
+            <div class="type_selection">
+                <select id="type_selection">
+                    <option value="RSA2048">RSA 2048 bits</option>
+                    <option value="RSA4096">RSA 4096 bits</option>
+                    <option value="ED25519">Ed25519</option>
                 </select>
             </div>
             <div class="button_generator">
@@ -111,8 +112,8 @@
                 </div>
                 <div class="prvKeyFormat">
                     <select id="prvKeyFormat">
-                        <option value="PKCS1">PKCS#1</option>
-                        <option value="PKCS8" selected>PKCS#8</option>
+                        <option value="PKCS1">PKCS#1 PEM</option>
+                        <option value="PKCS8" selected>PKCS#8 PEM</option>
                     </select>
                 </div>
                 <div class="textarea">
@@ -212,7 +213,7 @@
     let baseUrl = location.href.replace(path,"forge.min.js");
     console.log(baseUrl)
 
-    let bitsSelection = document.querySelector("select#bitsSelection");
+    let type_selection = document.querySelector("select#type_selection");
     let generator = document.querySelector("button#button_generator");
     let privateKeyPem = document.querySelector("textarea#privateKeyPem");
     let publicKeyPem = document.querySelector("textarea#publicKeyPem");
@@ -226,8 +227,27 @@
     let linespinloader = document.querySelector("div.line-spin-fade-loader");
     let ballspinloader = document.querySelector("div.ball-spin-fade-loader");
     //
-    bitsSelection.addEventListener("change",()=>{
-        console.log(bitsSelection.value)
+    type_selection.addEventListener("change",()=>{
+        console.log(type_selection.value)
+        if(type_selection.value === "ED25519"){
+            
+            prvKeyFormat.disabled = true;
+            
+            let ed25519_pem_option = document.createElement("option");
+            ed25519_pem_option.appendChild(document.createTextNode("Ed25519 PEM"));
+            prvKeyFormat.appendChild(ed25519_pem_option);
+
+            ed25519_pem_option.selected = true;
+            
+        }
+        else{
+            
+            if(prvKeyFormat.disabled){
+                prvKeyFormat.disabled  = false;
+                prvKeyFormat.lastElementChild.remove();
+                prvKeyFormat.lastElementChild.selected = true;
+            } 
+        }
     })
 
     prvKeyFormat.addEventListener("change",()=>{
@@ -259,16 +279,30 @@
         
     })
 
+
     transform.addEventListener("click",()=>{
 
         try{
-            let privateKey = pki.privateKeyFromPem(privateKeyPem.value);
-            let publicKey = pki.setRsaPublicKey(privateKey.n, privateKey.e);
-            let pubPem = pki.publicKeyToPem(publicKey);
-            publicKeyPem.value = pubPem;
-            console.log(pubPem)
+            if(/RSA/g.test(type_selection.value)){
+                let privateKey = pki.privateKeyFromPem(privateKeyPem.value);
+                let publicKey = pki.setRsaPublicKey(privateKey.n, privateKey.e);
+                let pubPem = pki.publicKeyToPem(publicKey);
+                publicKeyPem.value = pubPem;
+                console.log(pubPem)
 
-            format_change_prompt(transform,"success","Success!","120px");
+                format_change_prompt(transform,"success","Success!","120px");
+            }
+            else if(/ED25519/g.test(type_selection.value)){
+
+                
+                let privateKey_buf = ed25519_pem2prvbuf(privateKeyPem.value);
+
+                
+                let publicKey_buf = privateKey_buf.subarray(32);
+                let pubPem = ed25519_pub2pem(publicKey_buf)
+                publicKeyPem.value = pubPem;
+                console.log(pubPem);
+            }
         }
         catch(error){
             publicKeyPem.value = "Please enter the correct Private Key before using the private key to get the public key!\n" + publicKeyPem.value;
@@ -304,7 +338,7 @@
         let url = window.URL.createObjectURL(blob);
         let worker = new Worker(url);
         
-        worker.postMessage([bitsSelection.value, prvKeyFormat.value, baseUrl]);
+        worker.postMessage([type_selection.value, prvKeyFormat.value, baseUrl]);
 
         worker.onmessage = function (event) {
             
@@ -324,6 +358,9 @@
         
     })
 
+</script>
+
+<script name="copy_key">
     copyPrvKey.addEventListener("click", ()=>{
         
         navigator.clipboard.writeText(privateKeyPem.value).then(()=>{
@@ -341,7 +378,6 @@
             setTimeout(function(){span_message.style="visibility:hidden"},800);
         })
     })
-
 </script>
 
 <script id="format_change_prompt" type="text/javascript">
@@ -357,37 +393,253 @@
             
 </script>
 
-<script id="worker" type="js/worker">
+<script id="worker" name="generate key pairs" type="js/worker">
+    window = globalThis;
     
     self.addEventListener('message', function (event) {
 
         importScripts(event.data[2]);
+
         const pki = forge.pki;
         const rsa = pki.rsa;
+        const ed25519 = pki.ed25519;
 
-        let number = event.data[0];
+        let key_type = event.data[0];
         let format = event.data[1];
 
-        
-        let keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
+        let keypair = {};
         let prvPem = '';
-       
-        if(format === "PKCS8"){
-            let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
-            let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
-            
-            prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
-        }
-        else if(format === "PKCS1"){
-            prvPem = pki.privateKeyToPem(keypair.privateKey);
-        }
-        
-        let pubPem = pki.publicKeyToPem(keypair.publicKey);
+        let pubPem = '';
 
+        if(key_type === "RSA2048" || key_type === "RSA4096"){
+
+            let number = key_type.substring(3);
+            keypair = rsa.generateKeyPair({bits: number, e: 0x10001});
+
+            if(format === "PKCS8"){
+                let rsaPrivateKey = pki.privateKeyToAsn1(keypair.privateKey);
+                let privateKeyInfo = pki.wrapRsaPrivateKey(rsaPrivateKey);
+                
+                prvPem = pki.privateKeyInfoToPem(privateKeyInfo);
+            }
+            else if(format === "PKCS1"){
+                prvPem = pki.privateKeyToPem(keypair.privateKey);
+            }
+
+            pubPem = pki.publicKeyToPem(keypair.publicKey);
+
+        }
+        else if(key_type === "ED25519"){
+            let seed = forge.random.getBytesSync(32);
+            keypair = ed25519.generateKeyPair({seed:seed});
+
+            //console.log("prv:",keypair.privateKey);
+            //console.log("pub:",keypair.publicKey);
+
+            prvPem = ed25519_prv2pem(keypair.privateKey);
+            pubPem = ed25519_pub2pem(keypair.publicKey);
+            
+
+        }
+
+        
         postMessage([prvPem,pubPem]);
         
         self.close();
         
     }, false);
+
+    function arrbuf2binarystr(buf){
+        const bufView = new Uint8Array(buf);
+        return String.fromCharCode(...bufView.slice());
+    }
+    
+
+    function ed25519_pub2pem(key){
+        /*  
+            0x30, represent "SEQUENCE"
+            0x2a, the next elements length 42 bytes
+                
+                0x30, represent "SEQUENCE"
+                0x05, the next elements length 5 bytes
+                    0x06, represent "OBJECT_IDENTIFIER"
+                    0x03, the next elements length 3 bytes
+                        0x2b 0x65 0x70 => {1 3 101 112} is the OID of ed25519, calculated like 01*40 + 03 = 43, 101, 112
+
+                0x03, represents "BIT STRING"
+                0x21, the next elements length 33 bytes
+                    0x00, public key padding at the beginning
+                    next 32 bytes is <public key>
+            
+            reference https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/ and RFC8410
+        */
+        let key_bufView = new Uint8Array(key);
+        let asn1_ed25519_header = new Uint8Array([0x30,0x2a,0x30,0x05,0x06,0x03,0x2b,0x65,0x70,0x03,0x21,0x00]);
+        
+        let pubKey_buf = new Uint8Array(asn1_ed25519_header.length + key_bufView.length);
+        pubKey_buf.set(asn1_ed25519_header);
+        pubKey_buf.set(key_bufView, asn1_ed25519_header.length);
+
+        let begin_pubkey = "-----BEGIN PUBLIC KEY-----\n";
+        let end_pubkey = "-----END PUBLIC KEY-----";
+
+        pubPem = begin_pubkey + btoa(arrbuf2binarystr(pubKey_buf)).replace(/(.{1,64})/g,"$1\n") + end_pubkey;
+
+        return pubPem;
+    }
+
+    function ed25519_prv2pem(key){
+        /* 
+            0x30, type:   "SEQUENCE"
+            0x72, length: 114 bytes
+                value:
+                0x02, type:   "INTEGER"
+                0x01, length: 1 bytes
+                value:
+                    0x01, data 1
+                
+                0x30, type:   "SEQUENCE"
+                0x05, length: 5 bytes
+                    value:
+                    0x06, type:   OID
+                    0x03, length: 3 bytes
+                        value:
+                        0x2b 0x65 0x70, data of OID represents ed25519
+
+                0x04, type:   "OCTET STRING"
+                0x22, length: 34 bytes
+                    value:
+                    0x04, type:   "OCTET STRING"
+                    0x20, length: 32 bytes
+                        32 bytes data is <private key>
+                
+                0xa0, type:   context specific constructed, 0b(1010,0000), the 8bit and 6bit 
+                0x1f, length: 31 bytes
+                    value:
+                    0x30, type:   "SEQUENCE"
+                    0x1d, length: 29 bytes
+                        value:
+                        0x06, type:   object identifier
+                        0x0a, length: 10 bytes
+                            value:
+                            0x2a 0x86 0x48 0x86 0xf7 0x0d 0x01 0x09 0x09 0x14,
+                            
+                                2a => 1*40 + 2,
+                                86 48 => binary(1000,0110 0100,1000), as the 0x86 
+                                    0000110,1001000 = 840
+
+                                86 f7 0d =>binary(1000,0110 1111,0111 0000,1101)  000,0110;111,0111;000,1101 = 113549
+                                01 09 09 14 = 1,9,9,20
+                        0x31, type:   "SET"
+                        0x0f, length: 15 bytes
+                            value:
+                            0x0c, type:   uft8string 
+                            0x0d, length: 13 bytes 
+                                value:
+                                0x43 0x75 0x72 0x64 0x6c 0x65 0x20 0x43 0x68 0x61 0x69 0x72 0x73 => "Curdle Chairs"
+                                
+                0x81, type: context specific primary
+                0x21, length: 33 bytes
+                    value:
+                    0x00, beginning padding
+                    next 32 bytes is <public key>
+            
+            reference https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/ and RFC8410
+            
+        */
+        let key_bufView = new Uint8Array(key);
+
+        let asn1_ed25519_header = new Uint8Array([0x30,0x72,0x02,0x01,0x01,0x30,0x05,0x06,0x03,0x2b,0x65,0x70,0x04,0x22,0x04,0x20]);
+        
+        let asn1_ed25519_middle = new Uint8Array([0xa0,0x1f,0x30,0x1d,0x06,0x0a,0x2a,0x86,0x48,0x86,0xf7,0x0d,0x01,0x09,0x09,0x14,0x31,0x0f,0x0c,0x0d,0x43,0x75,0x72,0x64,0x6c,0x65,0x20,0x43,0x68,0x61,0x69,0x72,0x73,0x81,0x21,0x00])
+        
+        let prvKey_buf = new Uint8Array(asn1_ed25519_header.length+asn1_ed25519_middle.length+key_bufView.length);
+
+        prvKey_buf.set(asn1_ed25519_header);
+        //console.log(prvKey_buf)
+        prvKey_buf.set(key_bufView.slice(0,32),asn1_ed25519_header.length);
+        prvKey_buf.set(asn1_ed25519_middle,asn1_ed25519_header.length+32);
+        prvKey_buf.set(key_bufView.slice(32),asn1_ed25519_header.length+32+asn1_ed25519_middle.length);
+        
+        //console.log(prvKey_buf)
+        let begin_prvkey = "-----BEGIN PRIVATE KEY-----\n";
+        let end_prvkey = "-----END PRIVATE KEY-----";
+
+        prvPem = begin_prvkey + btoa(arrbuf2binarystr(prvKey_buf)).replace(/(.{1,64})/g,"$1\n") + end_prvkey;
+
+        return prvPem;
+    }
+
+
+
 </script>
+
+<script>
+        function ed25519_pem2prvbuf(pem){
+
+            pem = pem.replace(/\s/g,"");
+            
+
+            let pemHeader = "-----BEGINPRIVATEKEY-----";
+            let pemFooter = "-----ENDPRIVATEKEY-----";
+            let pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length);
+            
+            let binaryDer = new Uint8Array(str2ab(window.atob(pemContents))) ;
+            
+            let prv_part = binaryDer.subarray(16,48);
+            let pub_part = binaryDer.subarray(84,116);
+            let comb = new Uint8Array(prv_part.length+pub_part.length);
+            comb.set(prv_part)
+            comb.set(pub_part,32)                            
+            return comb;
+        }
+
+        function str2ab(str) {
+            const buf = new ArrayBuffer(str.length);
+            const bufView = new Uint8Array(buf);
+            for (let i = 0, strLen = str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        }
+
+        function ed25519_pub2pem(key){
+            /*  
+                0x30, represent "SEQUENCE"
+                0x2a, the next elements length 42 bytes
+                    
+                    0x30, represent "SEQUENCE"
+                    0x05, the next elements length 5 bytes
+                        0x06, represent "OBJECT_IDENTIFIER"
+                        0x03, the next elements length 3 bytes
+                            0x2b 0x65 0x70 => {1 3 101 112} is the OID of ed25519, calculated like 01*40 + 03 = 43, 101, 112
+
+                    0x03, represents "BIT STRING"
+                    0x21, the next elements length 33 bytes
+                        0x00, public key padding at the beginning
+                        next 32 bytes is <public key>
+                
+                reference https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/ and RFC8410
+            */
+            let key_bufView = new Uint8Array(key);
+            let asn1_ed25519_header = new Uint8Array([0x30,0x2a,0x30,0x05,0x06,0x03,0x2b,0x65,0x70,0x03,0x21,0x00]);
+            
+            let pubKey_buf = new Uint8Array(asn1_ed25519_header.length + key_bufView.length);
+            pubKey_buf.set(asn1_ed25519_header);
+            pubKey_buf.set(key_bufView, asn1_ed25519_header.length);
+
+            let begin_pubkey = "-----BEGIN PUBLIC KEY-----\n";
+            let end_pubkey = "-----END PUBLIC KEY-----";
+
+            pubPem = begin_pubkey + btoa(arrbuf2binarystr(pubKey_buf)).replace(/(.{1,64})/g,"$1\n") + end_pubkey;
+
+            return pubPem;
+        }
+
+        function arrbuf2binarystr(buf){
+            const bufView = new Uint8Array(buf);
+            return String.fromCharCode(...bufView.slice());
+        }
+</script>
+
 </html>
