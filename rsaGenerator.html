@@ -164,7 +164,8 @@
         </div>
     </div>
     
-    <style>
+    <span name="return_home_box">
+        <style name="style_wrap-home-box">
             div.home-box {
                 height:50px; width:50px;text-align: center;border-radius: 12px; box-sizing: border-box; outline:none;
                 left:40px;
@@ -198,13 +199,17 @@
             @keyframes slide-right {
                 100% {left: 0px;}
             }
-    </style>
-    <div class="wrap-home-box">
-        <div class="home-box">
-            <a href="./"><div>Back <br> Home</div></a>
+        </style>
+        <div class="wrap-home-box">
+            <div class="home-box">
+                <a href="./"><div>Back <br> Home</div></a>
+            </div>
         </div>
-    </div>
+    </span>
+
 </body>
+
+
 <script type="text/javascript">
     
     const pki = forge.pki;
@@ -574,7 +579,7 @@
 
 </script>
 
-<script>
+<script name="ed25519 key format converter">
         function ed25519_pem2prvbuf(pem){
 
             pem = pem.replace(/\s/g,"");
