@@ -27,3 +27,5 @@ signature tool for work
 2023-05-12 update: Add a new style to hide the secret key and private key on the page for signature tool [signingTool.html](https://lzjzhuanyong.github.io/signingTool.html)
 
 2023-05-13 update: websocket api test tool supports rsa key, fix some bugs
+
+2023-05-15 update: new feature of key generator to support generating ed25519 key
