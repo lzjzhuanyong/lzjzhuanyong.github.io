@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -34,10 +33,10 @@
 
             div.areaSecKey {height:50%;}
             input#hmac_secret_key {width:90%}
-            div.rsa_private_key {height:100%;display:none}
-            textarea#rsa_private_key {width: 90%; height:65%; padding: 12px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
-            textarea#rsa_private_key:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
-            textarea#rsa_private_key:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+            div.asym_private_key {height:100%;display:none}
+            textarea#asym_private_key {width: 90%; height:65%; padding: 12px 8px; margin: 8px 0px 0px 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+            textarea#asym_private_key:hover {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
+            textarea#asym_private_key:focus {border: 1px solid #ccc; box-shadow: 0px 0px 0px 2px lightgrey}
 
             button.main-operator {width: 15%; height: 10%; padding: 5px 10px; margin: 8px 8px 1px 8px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
             button.main-operator:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
@@ -242,6 +241,7 @@
                             <select id="keyFormat">
                                 <option value="HMAC">HMAC Key</option>
                                 <option value="RSA">RSA Key</option>
+                                <option value="ED25519">ED25519 Key</option>
                             </select>
                             <div id="secret_key_eye" class="css-1gkkq18">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" class="css-162l5eo"><path d="M12 14.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M6.555 6.31L1 12l5.555 5.69a7.572 7.572 0 0010.89 0L23 12l-5.555-5.69a7.572 7.572 0 00-10.89 0zM17 12a5 5 0 11-10 0 5 5 0 0110 0z" fill="currentColor"></path></svg>
@@ -251,8 +251,8 @@
                             <div class="hmac_secret_key">
                                 <input class="main-info" type="password" id="hmac_secret_key" value="">
                             </div>
-                            <div class="rsa_private_key">
-                                <textarea id='rsa_private_key'></textarea>
+                            <div class="asym_private_key">
+                                <textarea id='asym_private_key'></textarea>
                             </div>
                         </div>
                     </div>
@@ -339,14 +339,14 @@
         let secret_key_eye = document.querySelector("#secret_key_eye");
 
         let hmac_secret_key = document.querySelector("#hmac_secret_key");
-        let rsa_private_key = document.querySelector("#rsa_private_key");
+        let asym_private_key = document.querySelector("#asym_private_key");
 
         
 
         api_key_eye.firstElementChild.style.display = "none";
         secret_key_eye.firstElementChild.style.display = "none";
 
-        rsa_private_key.style = "-webkit-text-security: disc;";
+        asym_private_key.style = "-webkit-text-security: disc;";
 
         let api_key_eye_switch = true;
         
@@ -375,7 +375,7 @@
                 secret_key_eye.children[1].style.display = "none";
                 secret_key_eye_switch = false;
                 hmac_secret_key.type = "text";
-                rsa_private_key.style = "-webkit-text-security: none;";
+                asym_private_key.style = "-webkit-text-security: none;";
                 
 
             }
@@ -384,7 +384,7 @@
                 secret_key_eye.children[0].style.display = "none";
                 secret_key_eye_switch = true;
                 hmac_secret_key.type = "password";
-                rsa_private_key.style = "-webkit-text-security: disc;";
+                asym_private_key.style = "-webkit-text-security: disc;";
             }
         })
     </script>
@@ -392,7 +392,7 @@
     <script name="style_change_key_format" type="text/javascript">
         
         let div_hmac_secret_key = document.querySelector(".hmac_secret_key");
-        let div_rsa_private_key = document.querySelector(".rsa_private_key");
+        let div_asym_private_key = document.querySelector(".asym_private_key");
         let label_secret_key = document.querySelector(".label_secret_key");
 
         let keyFormat = document.querySelector("#keyFormat");
@@ -401,12 +401,12 @@
                 console.log(keyFormat.value);
                 if(keyFormat.value === "HMAC"){
                     div_hmac_secret_key.style.display = "block";
-                    div_rsa_private_key.style.display = "none";
+                    div_asym_private_key.style.display = "none";
                     label_secret_key.textContent = "Secret Key:";
                 }
-                else if(keyFormat.value === "RSA"){
+                else if(keyFormat.value === "RSA" || keyFormat.value === "ED25519"){
                     div_hmac_secret_key.style.display = "none";
-                    div_rsa_private_key.style.display = "block";
+                    div_asym_private_key.style.display = "block";
                     label_secret_key.textContent = "Private Key:";
                 }
             })
@@ -813,7 +813,7 @@
             }
             else if(keyFormat.value === "RSA"){
                 try{
-                    let privateKey = pki.privateKeyFromPem(rsa_private_key.value);
+                    let privateKey = pki.privateKeyFromPem(asym_private_key.value);
                     let md = forge.md.sha256.create();
                     md.update(queryparameter,"utf8");
                         
@@ -831,9 +831,72 @@
                 }
                 
             }
+            else if(keyFormat.value === "ED25519"){
+
+                try{
+
+                    let ed25519_prvkey_pem = asym_private_key.value.replace(/[\s]+$/g,'');
+                    let ed25519_prvkey = ed25519_pem2prvbuf(ed25519_prvkey_pem);
+
+                    let sig = pki.ed25519.sign({
+                        message: queryparameter,
+                        encoding: "uft8",
+                        privateKey: ed25519_prvkey
+                    })
+                    console.log(arrbuf2binarystr(sig))
+                    request_data.params.signature = btoa(arrbuf2binarystr(sig));
+                        
+                    request_message.value = json_style(JSON.stringify(request_data));
+
+                }
+                catch(error){
+
+                    insertMessage(error)
+                    insertMessage("Please set a valid ED25519 private key.");
+                    console.log(error);
+
+                }
+            }
             
         })
 
+    </script>
+
+    <script type="text/javascript" name="ed25519 key convert function">
+
+        function ed25519_pem2prvbuf(pem){
+
+            pem = pem.replace(/\s/g,"");
+
+
+            let pemHeader = "-----BEGINPRIVATEKEY-----";
+            let pemFooter = "-----ENDPRIVATEKEY-----";
+            let pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length);
+
+            let binaryDer = new Uint8Array(str2ab(window.atob(pemContents))) ;
+
+            let prv_part = binaryDer.subarray(16,48);
+            let pub_part = binaryDer.subarray(84,116);
+            let comb = new Uint8Array(prv_part.length+pub_part.length);
+            comb.set(prv_part)
+            comb.set(pub_part,32)                            
+            return comb;
+        }
+
+        function str2ab(str) {
+            const buf = new ArrayBuffer(str.length);
+            const bufView = new Uint8Array(buf);
+            for (let i = 0, strLen = str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        }
+
+
+        function arrbuf2binarystr(buf){
+            const bufView = new Uint8Array(buf);
+            return String.fromCharCode(...bufView.slice());
+        }
     </script>
 
     <script type="text/javascript" name="style_raw_json_params">
