@@ -868,19 +868,15 @@
 
             pem = pem.replace(/\s/g,"");
 
-
             let pemHeader = "-----BEGINPRIVATEKEY-----";
             let pemFooter = "-----ENDPRIVATEKEY-----";
             let pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length);
+            //console.log(pemContents)
+            let binaryDerString = window.atob(pemContents);
+            let binaryDer = new Uint8Array(str2ab(binaryDerString));
 
-            let binaryDer = new Uint8Array(str2ab(window.atob(pemContents))) ;
 
-            let prv_part = binaryDer.subarray(16,48);
-            let pub_part = binaryDer.subarray(84,116);
-            let comb = new Uint8Array(prv_part.length+pub_part.length);
-            comb.set(prv_part)
-            comb.set(pub_part,32)                            
-            return comb;
+            return binaryDer.slice(16,48);
         }
 
         function str2ab(str) {
