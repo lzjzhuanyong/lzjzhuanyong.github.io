@@ -301,9 +301,9 @@
 
                 
                 let privateKey_buf = ed25519_pem2prvbuf(privateKeyPem.value);
-
                 
-                let publicKey_buf = privateKey_buf.subarray(32);
+                let publicKey_buf = pki.ed25519.generateKeyPair({seed:privateKey_buf}).publicKey;
+
                 let pubPem = ed25519_pub2pem(publicKey_buf)
                 publicKeyPem.value = pubPem;
                 console.log(pubPem);
@@ -400,6 +400,8 @@
 
 <script id="worker" name="generate key pairs" type="js/worker">
     window = globalThis;
+
+
     
     self.addEventListener('message', function (event) {
 
@@ -441,8 +443,11 @@
             //console.log("prv:",keypair.privateKey);
             //console.log("pub:",keypair.publicKey);
 
-            prvPem = ed25519_prv2pem(keypair.privateKey);
-            pubPem = ed25519_pub2pem(keypair.publicKey);
+            let ed25519_privatekey = keypair.privateKey.slice(0,32);
+            let ed25519_publicKey = keypair.publicKey;
+
+            prvPem = ed25519_prv2pem_simple(ed25519_privatekey);
+            pubPem = ed25519_pub2pem(ed25519_publicKey);
             
 
         }
@@ -493,119 +498,72 @@
         return pubPem;
     }
 
-    function ed25519_prv2pem(key){
-        /* 
-            0x30, type:   "SEQUENCE"
-            0x72, length: 114 bytes
+    function ed25519_prv2pem_simple(key){
+        /*
+        An example of an Ed25519 private key without the public key:
+            0x30, type: "SEQUENCE"
+            0x2e, length: 46 bytes
                 value:
-                0x02, type:   "INTEGER"
-                0x01, length: 1 bytes
-                value:
-                    0x01, data 1
-                
-                0x30, type:   "SEQUENCE"
+                0x02, type: "INTEGER"
+                0x01, length: 1 byte
+                    value:
+                    0x00, data 0
+                0x30, type: "SEQUENCE"
                 0x05, length: 5 bytes
                     value:
-                    0x06, type:   OID
+                    0x06, type: OID
                     0x03, length: 3 bytes
                         value:
-                        0x2b 0x65 0x70, data of OID represents ed25519
-
-                0x04, type:   "OCTET STRING"
+                        0x2b 0x65 0x70, {1 3 101 112} represents ed25519 => 1*40+3 = 43, 101, 112
+                0x04, type: "OCTET STRING"
                 0x22, length: 34 bytes
                     value:
-                    0x04, type:   "OCTET STRING"
+                    0x04, type: "OCTET STRING"
                     0x20, length: 32 bytes
-                        32 bytes data is <private key>
-                
-                0xa0, type:   context specific constructed, 0b(1010,0000), the 8bit and 6bit 
-                0x1f, length: 31 bytes
-                    value:
-                    0x30, type:   "SEQUENCE"
-                    0x1d, length: 29 bytes
                         value:
-                        0x06, type:   object identifier
-                        0x0a, length: 10 bytes
-                            value:
-                            0x2a 0x86 0x48 0x86 0xf7 0x0d 0x01 0x09 0x09 0x14,
-                            
-                                2a => 1*40 + 2,
-                                86 48 => binary(1000,0110 0100,1000), as the 0x86 
-                                    0000110,1001000 = 840
-
-                                86 f7 0d =>binary(1000,0110 1111,0111 0000,1101)  000,0110;111,0111;000,1101 = 113549
-                                01 09 09 14 = 1,9,9,20
-                        0x31, type:   "SET"
-                        0x0f, length: 15 bytes
-                            value:
-                            0x0c, type:   uft8string 
-                            0x0d, length: 13 bytes 
-                                value:
-                                0x43 0x75 0x72 0x64 0x6c 0x65 0x20 0x43 0x68 0x61 0x69 0x72 0x73 => "Curdle Chairs"
-                                
-                0x81, type: context specific primary
-                0x21, length: 33 bytes
-                    value:
-                    0x00, beginning padding
-                    next 32 bytes is <public key>
-            
-            reference https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/ and RFC8410
-            
+                        32 bytes data is <private key>
         */
+
         let key_bufView = new Uint8Array(key);
 
-        let asn1_ed25519_header = new Uint8Array([0x30,0x72,0x02,0x01,0x01,0x30,0x05,0x06,0x03,0x2b,0x65,0x70,0x04,0x22,0x04,0x20]);
+        let asn1_ed25519_header = new Uint8Array([0x30,0x2e,0x02,0x01,0x00,0x30,0x05,0x06,0x03,0x2b,0x65,0x70,0x04,0x22,0x04,0x20]);
         
-        let asn1_ed25519_middle = new Uint8Array([0xa0,0x1f,0x30,0x1d,0x06,0x0a,0x2a,0x86,0x48,0x86,0xf7,0x0d,0x01,0x09,0x09,0x14,0x31,0x0f,0x0c,0x0d,0x43,0x75,0x72,0x64,0x6c,0x65,0x20,0x43,0x68,0x61,0x69,0x72,0x73,0x81,0x21,0x00])
+        let prvKey_buf = new Uint8Array(asn1_ed25519_header.length + key_bufView.length);
         
-        let prvKey_buf = new Uint8Array(asn1_ed25519_header.length+asn1_ed25519_middle.length+key_bufView.length);
-
         prvKey_buf.set(asn1_ed25519_header);
+        prvKey_buf.set(key_bufView,asn1_ed25519_header.length);
+
         //console.log(prvKey_buf)
-        prvKey_buf.set(key_bufView.slice(0,32),asn1_ed25519_header.length);
-        prvKey_buf.set(asn1_ed25519_middle,asn1_ed25519_header.length+32);
-        prvKey_buf.set(key_bufView.slice(32),asn1_ed25519_header.length+32+asn1_ed25519_middle.length);
-        
-        //console.log(prvKey_buf)
+
         let begin_prvkey = "-----BEGIN PRIVATE KEY-----\n";
         let end_prvkey = "-----END PRIVATE KEY-----";
 
         prvPem = begin_prvkey + btoa(arrbuf2binarystr(prvKey_buf)).replace(/(.{1,64})/g,"$1\n") + end_prvkey;
 
         return prvPem;
+
     }
+
 
 
 
 </script>
 
 <script name="ed25519 key format converter">
+
+
         function ed25519_pem2prvbuf(pem){
 
             pem = pem.replace(/\s/g,"");
-            
 
             let pemHeader = "-----BEGINPRIVATEKEY-----";
             let pemFooter = "-----ENDPRIVATEKEY-----";
             let pemContents = pem.substring(pemHeader.length, pem.length - pemFooter.length);
+            //console.log(pemContents)
             
-            let binaryDer = new Uint8Array(str2ab(window.atob(pemContents))) ;
-            
-            let prv_part = binaryDer.subarray(16,48);
-            let pub_part = binaryDer.subarray(84,116);
-            let comb = new Uint8Array(prv_part.length+pub_part.length);
-            comb.set(prv_part)
-            comb.set(pub_part,32)                            
-            return comb;
-        }
+            let prv_binaryDer = new Uint8Array(str2ab(window.atob(pemContents)));
 
-        function str2ab(str) {
-            const buf = new ArrayBuffer(str.length);
-            const bufView = new Uint8Array(buf);
-            for (let i = 0, strLen = str.length; i < strLen; i++) {
-                bufView[i] = str.charCodeAt(i);
-            }
-            return buf;
+            return prv_binaryDer.slice(16,48);
         }
 
         function ed25519_pub2pem(key){
@@ -641,10 +599,114 @@
             return pubPem;
         }
 
+</script>
+
+<script name="general function">
+        function str2ab(str) {
+            const buf = new ArrayBuffer(str.length);
+            const bufView = new Uint8Array(buf);
+            for (let i = 0, strLen = str.length; i < strLen; i++) {
+                bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        }
+
         function arrbuf2binarystr(buf){
             const bufView = new Uint8Array(buf);
             return String.fromCharCode(...bufView.slice());
         }
+</script>
+
+<script name="not used">
+        // function ed25519_prv2pem_with_attribute_and_public_key(prvkey,pubkey){
+        //     /* 
+        //     An example of the same Ed25519 private key encoded with an attribute and the public key:
+                
+        //         0x30, type:   "SEQUENCE"
+        //         0x72, length: 114 bytes
+        //             value:
+        //             0x02, type:   "INTEGER"
+        //             0x01, length: 1 bytes
+        //             value:
+        //                 0x01, data 1
+                    
+        //             0x30, type:   "SEQUENCE"
+        //             0x05, length: 5 bytes
+        //                 value:
+        //                 0x06, type:   OID
+        //                 0x03, length: 3 bytes
+        //                     value:
+        //                     0x2b 0x65 0x70, data of OID represents ed25519
+
+        //             0x04, type:   "OCTET STRING"
+        //             0x22, length: 34 bytes
+        //                 value:
+        //                 0x04, type:   "OCTET STRING"
+        //                 0x20, length: 32 bytes
+        //                     32 bytes data is <private key>
+                    
+        //             0xa0, type:   context specific constructed, 0b(1010,0000), the 8bit and 6bit 
+        //             0x1f, length: 31 bytes
+        //                 value:
+        //                 0x30, type:   "SEQUENCE"
+        //                 0x1d, length: 29 bytes
+        //                     value:
+        //                     0x06, type:   object identifier
+        //                     0x0a, length: 10 bytes
+        //                         value:
+        //                         0x2a 0x86 0x48 0x86 0xf7 0x0d 0x01 0x09 0x09 0x14,
+                                
+        //                             2a => 1*40 + 2,
+        //                             86 48 => binary(1000,0110 0100,1000), as the 0x86 
+        //                                 0000110,1001000 = 840
+
+        //                             86 f7 0d =>binary(1000,0110 1111,0111 0000,1101)  000,0110;111,0111;000,1101 = 113549
+        //                             01 09 09 14 = 1,9,9,20
+        //                     0x31, type:   "SET"
+        //                     0x0f, length: 15 bytes
+        //                         value:
+        //                         0x0c, type:   uft8string 
+        //                         0x0d, length: 13 bytes 
+        //                             value:
+        //                             0x43 0x75 0x72 0x64 0x6c 0x65 0x20 0x43 0x68 0x61 0x69 0x72 0x73 => "Curdle Chairs"
+                                    
+        //             0x81, type: context specific primary
+        //             0x21, length: 33 bytes
+        //                 value:
+        //                 0x00, beginning padding
+        //                 next 32 bytes is <public key>
+                
+        //         reference https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/ and RFC8410
+                
+        //     */
+            
+            
+        //     let prvkey_bufView = new Uint8Array(prvkey);
+        //     let pubkey_bufView = new Uint8Array(pubkey);
+
+        //     let asn1_ed25519_header = new Uint8Array([0x30,0x72,0x02,0x01,0x01,0x30,0x05,0x06,0x03,0x2b,0x65,0x70,0x04,0x22,0x04,0x20]);
+            
+        //     let asn1_ed25519_middle = new Uint8Array([0xa0,0x1f,0x30,0x1d,0x06,0x0a,0x2a,0x86,0x48,0x86,0xf7,0x0d,0x01,0x09,0x09,0x14,0x31,0x0f,0x0c,0x0d,0x43,0x75,0x72,0x64,0x6c,0x65,0x20,0x43,0x68,0x61,0x69,0x72,0x73,0x81,0x21,0x00])
+
+        //     let prvKey_buf = new Uint8Array(asn1_ed25519_header.length+asn1_ed25519_middle.length+prvkey_bufView.length+pubkey_bufView.length);
+
+        //     prvKey_buf.set(asn1_ed25519_header);
+        //     //console.log(prvKey_buf)
+        //     prvKey_buf.set(prvkey_bufView,asn1_ed25519_header.length);
+        //     prvKey_buf.set(asn1_ed25519_middle,asn1_ed25519_header.length+32);
+
+            
+        //     prvKey_buf.set(pubkey_bufView,asn1_ed25519_header.length+32+asn1_ed25519_middle.length);
+            
+        //     //console.log(prvKey_buf)
+        //     let begin_prvkey = "-----BEGIN PRIVATE KEY-----\n";
+        //     let end_prvkey = "-----END PRIVATE KEY-----";
+
+        //     prvPem = begin_prvkey + btoa(arrbuf2binarystr(prvKey_buf)).replace(/(.{1,64})/g,"$1\n") + end_prvkey;
+
+        //     return prvPem;
+        // }
+
 </script>
 
 </html>
