@@ -926,8 +926,12 @@
                     break;
 
                 case "Table":
-                    
-                    let params_in_table = JSON.parse(raw_textarea.value);
+                    try{
+			let params_in_table = JSON.parse(raw_textarea.value);
+		    }
+                    catch(error){
+			let params_in_table = {};    
+		    }
                     query_params_table.children[1].innerHTML="";
                     
                     Object.keys(params_in_table).map((key)=>{
