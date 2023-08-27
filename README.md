@@ -33,3 +33,5 @@ signature tool for work
 2023-05-16 update: ed25519 private key pem meets the openssl and PyCryptodome style. Note: the spot testnet doesn't supported the URL encoded query string of ed25519 signature, but could get through without url encoded signature. Test with request body or websocket api tool
 
 2023-06-13 update: fixed a bug in the wsapitool
+
+2023-08-27 update: add a new tool for html transcoding
