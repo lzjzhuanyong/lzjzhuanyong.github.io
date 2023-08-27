@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"> 
+    <style>
+        html,body {height: 98%;}
+        div.root {height: 98%; width:100%;}
+        div.main {height: 85%;}
+        
+        div.input {height: 45%; }
+        div.output {height: 45%; }
+        textarea {width: 30%; height:85%; padding: 12px 8px; margin: 8px 0px 0px 12px; display:block; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; resize: none; outline:none}
+        
+        h1,h3 {margin: 4px 0px 0px 12px;}
+
+        div.button {margin: 8px 8px 8px 0px;}
+
+        button {width: 10%; height: 10%; padding: 5px 10px; margin: 8px 8px 1px 12px; border: 1px outset #ccc; border-radius: 4px; cursor: pointer; background-color: lightgrey; outline: none;}
+        button:hover {background-color: #B8B8B8; border: 1px outset #ccc; border-radius: 4px;}
+        button:active {box-shadow:0px 0px 0px 2px #ccc; background-color: #B8B8B8; border: 1px inset #ccc; border-radius: 4px;}
+
+    </style>
+    <title>HTML transcoding</title>
+</head>
+<body>
+    <div class="root">
+        <div class="header">
+            <h1>HTML transcoding</h1>
+        </div>
+        <div class="main">
+            <div class="input">
+                <h3>Input: </h3>
+                
+                <textarea id="input"></textarea>
+                
+            </div>
+            <div class="button">
+                <button id="button_encode">HTML encode</button>
+                <button id="button_decode">HTML decode</button>
+            </div>
+            <div class="output">
+                <h3>Output: </h3>
+                <textarea id="output"></textarea>
+            </div>
+            
+        </div>
+    </div>
+
+    <span name="return_home_box">
+        <style name="style_wrap-home-box">
+            div.home-box {
+                height:50px; width:50px;text-align: center;border-radius: 12px; box-sizing: border-box; outline:none;
+                left:40px;
+                top:0px;
+                position:relative;
+                background-color: lightgrey;
+                pointer-events: auto;
+            }
+
+            div.wrap-home-box {
+                
+                height:50px; width:52px;
+                position:fixed;
+                right:0px;
+                bottom: 30px;
+                overflow: hidden;
+                pointer-events: none;
+            }
+
+            div.home-box a div {height:50px; width:50px;}
+            div.home-box a {font-weight: bold;text-decoration:none}
+            div.home-box:hover {
+                top: 0px;
+                background-color: rgb(252, 213, 53);
+                border-radius: 8px;
+                animation: slide-right 1s;
+                animation-iteration-count: 1;
+                animation-fill-mode: forwards;
+            }
+
+            @keyframes slide-right {
+                100% {left: 0px;}
+            }
+        </style>
+        <div class="wrap-home-box">
+            <div class="home-box">
+                <a href="./"><div>Back <br> Home</div></a>
+            </div>
+        </div>
+    </span>
+</body>
+
+<script>
+    let input = document.querySelector("textarea#input");
+    let output = document.querySelector("textarea#output");
+
+    let encodeButton = document.querySelector("button#button_encode");
+    let decodeButton = document.querySelector("button#button_decode");
+
+    encodeButton.addEventListener("click",()=>{
+        output.value = html_encode(input.value);
+    })
+
+    decodeButton.addEventListener("click",()=>{
+        output.value = html_decode(input.value);
+    })
+
+</script>
+
+<script name="convertingFunction">
+
+    function html_encode(context){
+        let temp = document.createElement ("div");
+        //2.然后将要转换的字符串设置为这个元素的innerText(ie支持)或者textContent(火狐，google支持)
+        (temp.textContent != undefined ) ? (temp.textContent = context) : (temp.innerText = context);
+        //3.最后返回这个元素的innerHTML，即得到经过HTML编码转换的字符串了
+        let output = temp.innerHTML;
+        temp = null;
+        return output;
+    }
+
+    function html_decode(context){
+        //1.首先动态创建一个容器标签元素，如DIV
+        let temp = document.createElement("div");
+        //2.然后将要转换的字符串设置为这个元素的innerHTML(ie，火狐，google都支持)
+        temp.innerHTML = context;
+        //3.最后返回这个元素的innerText(ie支持)或者textContent(火狐，google支持)，即得到经过HTML解码的字符串了。
+        let output = temp.innerText || temp.textContent;
+        temp = null;
+        return output;
+    }
+
+    let text = "params&timestamp"
+
+    console.log(html_encode(text))
+    console.log(html_decode(text))
+</script>
+</html>
