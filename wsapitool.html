@@ -607,11 +607,10 @@
             // }
 
             let paragraph = document.createElement('p');
-
+            
             paragraph.setAttribute("class","bubble");
-            let message = document.createTextNode(text);
+            paragraph.innerHTML = text;
 
-            paragraph.appendChild(message);
             output.appendChild(paragraph);
         }
     </script>
