@@ -35,3 +35,5 @@ signature tool for work
 2023-06-13 update: fixed a bug in the wsapitool
 
 2023-08-27 update: add a new tool for html transcoding
+
+2024-03-06 update: fixed a bug in the wsapitool
