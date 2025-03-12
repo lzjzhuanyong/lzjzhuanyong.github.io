@@ -38,4 +38,4 @@ signature tool for work
 
 2024-03-06 update: fixed a bug in the wsapitool
 
-2025-03-13 update: For [wsapitool.html](https://lzjzhuanyong.github.io/wsapitool.html), add new test wss baseurl and options market options, supporting SBE data decoded from binary to text(currently only for spot testnet)
+2025-03-13 update: For [wstool.html](https://lzjzhuanyong.github.io/wstool.html), add new test wss baseurl and options market options, supporting SBE data decoded from binary to text(currently only for spot testnet)
