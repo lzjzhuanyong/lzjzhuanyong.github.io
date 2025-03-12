@@ -1,3 +1,4 @@
+
 <html>
     <head>
         <meta charset='utf-8'>
@@ -51,8 +52,10 @@
                             <datalist id="urlList" class="datalist">
                                 <option value="spot mainnet:wss://stream.binance.com:9443/stream">spot mainnet: wss://stream.binance.com:9443/stream</option>
                                 <option value="spot testnet:wss://testnet.binance.vision/stream">spot testnet: wss://testnet.binance.vision/stream</option>
+                                <option value="spot SBE testnet:wss://stream-sbe.testnet.binance.vision/stream">spot SBE testnet:wss://stream-sbe.testnet.binance.vision/stream</option>
                                 <option value="UM-futures mainnet:wss://fstream.binance.com/stream">UM-futures mainnet: wss://fstream.binance.com/stream</option>
                                 <option value="CM-futures mainnet:wss://dstream.binance.com/stream">CM-futures mainnet: wss://dstream.binance.com/stream</option>
+                                <option value="Options mainnet:wss://nbstream.binance.com/eoptions/stream">Options mainnet:wss://nbstream.binance.com/eoptions/stream</option>
                                 <option value="futures testnet:wss://stream.binancefuture.com/stream">futures testnet: wss://stream.binancefuture.com</option>
                             </datalist>
                         </div>
@@ -89,7 +92,7 @@
                         <input id="hidedata" type="checkbox"> hide the pushing data
                     </div>
                     <div>
-                        <input id="binary2text" type="checkbox"> convert binary data to text data
+                        <input id="binary2text" type="checkbox"> convert SBE data to text data
                     </div>
                 </div>
             </aside>
@@ -212,6 +215,7 @@
                 //console.log(typeof event.data);
                 //console.log(event)
                 
+
                 if(!hidedata.checked || ("result" in JSON.parse(messageEvent.data))){
                     let ifDataIsBlob = messageEvent.data instanceof Blob;
                     //console.log(ifDataIsBlob);
@@ -360,13 +364,354 @@
         }
 
         
-        function unzip(data){
+        async function unzip(data){
+
+            let successMessage = await data.arrayBuffer();
+            //console.log(messageEvent.data)
+            //console.log(successMessage)
+
+            // 引用自successMessage
+            //let temp_buffer = new Uint8Array(successMessage)
             
-            data.text().then(function(resolve,reject){
-                let result = resolve;
-                //console.log(typeof(result));
-                insertMessage(result);
-            })
+
+            let blockLength = new DataView(successMessage).getUint16(0,true);
+            let templateId = new DataView(successMessage).getUint16(2,true);
+            let schemaId = new DataView(successMessage).getUint16(4,true);
+            let version = new DataView(successMessage).getUint16(6,true);
+            
+            let result = {
+                "blockLength": blockLength,
+                "templateId": templateId,
+                "schemaId": schemaId,
+                "version": version,
+            }
+
+            let hexString = arrayBufferToHexString(successMessage);
+
+            let pointTo = 8;
+
+            switch(templateId){
+
+                case 10000: {
+                    let TradesStreamEvent = {};
+
+                    let eventTime = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    TradesStreamEvent["eventTime"] = eventTime.toString();
+
+                    let transactTime = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    TradesStreamEvent["transactTime"] = transactTime.toString();
+
+                    let priceExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    TradesStreamEvent["priceExponent"] = priceExponent.toString();
+
+                    let qtyExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    TradesStreamEvent["qtyExponent"] = qtyExponent.toString();
+
+                    let trades_group_blockLength = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    TradesStreamEvent["trades_group_blockLength"] = trades_group_blockLength.toString();
+
+                    let trades_numInGroup = new DataView(successMessage).getUint32(pointTo,true);
+                    pointTo += 4;
+                    TradesStreamEvent["trades_numInGroup"] = trades_numInGroup.toString();
+
+                    let trades = new Array(trades_numInGroup);
+                    
+                    for(let i=0; i<trades.length; i++){
+                        let trade = {};
+                        
+                        let id = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        trade["id"] = id.toString();
+
+                        let price = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        trade["price"] = (price.toString()*Math.pow(10,priceExponent)).toString();
+
+                        let qty = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        trade["qty"] = (qty.toString()*Math.pow(10,qtyExponent)).toString();
+
+                        let isBuyerMaker = new DataView(successMessage).getUint8(pointTo,true);
+                        pointTo += 1;
+                        trade["isBuyerMaker"] = isBuyerMaker?"True":"False";
+
+                        
+                        trade["isBestMatch"] = "True";
+
+                        trades[i] = trade;
+                    }
+                    
+
+                    TradesStreamEvent["trades"] = trades;
+
+                    let symbol_length = new DataView(successMessage).getUint8(pointTo,true);
+                    pointTo += 1;
+                    
+                    let symbol = "";
+
+                    for(let i=0; i<symbol_length; i++){
+                        let char = new DataView(successMessage).getUint8(pointTo+i,true);
+                        symbol += String.fromCharCode(char);
+                    }
+
+                    TradesStreamEvent["symbol"] = symbol;
+
+                    result["TradesStreamEvent"] = TradesStreamEvent;
+                    break;
+                }
+
+                case 10001: {
+
+                    let BestBidAskStreamEvent = {};
+
+                    let eventTime = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    BestBidAskStreamEvent["eventTime"] = eventTime.toString();
+
+                    let bookUpdateId = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    BestBidAskStreamEvent["bookUpdateId"] = bookUpdateId.toString();
+
+                    let priceExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    BestBidAskStreamEvent["priceExponent"] = priceExponent.toString();
+
+                    let qtyExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    BestBidAskStreamEvent["qtyExponent"] = qtyExponent.toString();
+
+                    let bidPrice = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    BestBidAskStreamEvent["bidPrice"] = (bidPrice.toString()*Math.pow(10,priceExponent)).toString();
+
+                    let bidQty = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    BestBidAskStreamEvent["bidQty"] = (bidQty.toString()*Math.pow(10,qtyExponent)).toString();
+
+                    let askPrice = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    BestBidAskStreamEvent["askPrice"] = (askPrice.toString()*Math.pow(10,priceExponent)).toString();
+
+                    let askQty = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    BestBidAskStreamEvent["askQty"] = (askQty.toString()*Math.pow(10,qtyExponent)).toString();
+
+                    let symbol_length = new DataView(successMessage).getUint8(pointTo,true);
+                    pointTo += 1;
+                    
+                    let symbol = "";
+
+                    for(let i=0; i<symbol_length; i++){
+                        let char = new DataView(successMessage).getUint8(pointTo+i,true);
+                        symbol += String.fromCharCode(char);
+                    }
+
+                    BestBidAskStreamEvent["symbol"] = symbol;
+                    result["BestBidAskStreamEvent"] = BestBidAskStreamEvent;
+                    break;
+                }
+
+                case 10002:{
+                    let DepthSnapshotStreamEvent = {};
+
+                    let eventTime = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    DepthSnapshotStreamEvent["eventTime"] = eventTime.toString();
+
+                    let bookUpdateId = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    DepthSnapshotStreamEvent["bookUpdateId"] = bookUpdateId.toString();
+
+                    let priceExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    DepthSnapshotStreamEvent["priceExponent"] = priceExponent.toString();
+
+                    let qtyExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    DepthSnapshotStreamEvent["qtyExponent"] = qtyExponent.toString();
+
+                    let bids_group_blockLength = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthSnapshotStreamEvent["bids_group_blockLength"] = bids_group_blockLength.toString();
+
+                    let bids_numInGroup = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthSnapshotStreamEvent["bids_numInGroup"] = bids_numInGroup.toString();
+
+                    let bids = new Array(bids_numInGroup);
+
+                    for(let i=0; i<bids.length; i++){
+                        let bid = {};
+
+                        let price = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        bid["price"] = (price.toString()*Math.pow(10,priceExponent)).toString();
+
+                        let qty = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        bid["qty"] = (qty.toString()*Math.pow(10,qtyExponent)).toString();
+
+                        bids[i] = bid;
+                    }
+
+                    DepthSnapshotStreamEvent["bids"] = bids;
+
+
+
+                    let asks_group_blockLength = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthSnapshotStreamEvent["asks_group_blockLength"] = asks_group_blockLength.toString();
+
+                    let asks_numInGroup = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthSnapshotStreamEvent["asks_numInGroup"] = asks_numInGroup.toString();
+
+                    let asks = new Array(asks_numInGroup);
+
+                    for(let i=0; i<asks.length; i++){
+                        let ask = {};
+
+                        let price = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        ask["price"] = (price.toString()*Math.pow(10,priceExponent)).toString();
+
+                        let qty = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        ask["qty"] = (qty.toString()*Math.pow(10,qtyExponent)).toString();
+
+                        asks[i] = ask;
+                    }
+
+                    DepthSnapshotStreamEvent["asks"] = asks;
+
+                    let symbol_length = new DataView(successMessage).getUint8(pointTo,true);
+                    pointTo += 1;
+                    
+                    let symbol = "";
+
+                    for(let i=0; i<symbol_length; i++){
+                        let char = new DataView(successMessage).getUint8(pointTo+i,true);
+                        symbol += String.fromCharCode(char);
+                    }
+
+                    DepthSnapshotStreamEvent["symbol"] = symbol;
+
+                    result["DepthSnapshotStreamEvent"] = DepthSnapshotStreamEvent;
+
+                }
+
+                case 10003: {
+
+                    let DepthDiffStreamEvent = {};
+
+                    let eventTime = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    DepthDiffStreamEvent["eventTime"] = eventTime.toString();
+
+                    let firstBookUpdateId = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    DepthDiffStreamEvent["firstBookUpdateId"] = firstBookUpdateId.toString();
+
+                    let lastBookUpdateId = new DataView(successMessage).getBigInt64(pointTo,true);
+                    pointTo += 8;
+                    DepthDiffStreamEvent["lastBookUpdateId"] = lastBookUpdateId.toString();
+
+                    let priceExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    DepthDiffStreamEvent["priceExponent"] = priceExponent.toString();
+
+                    let qtyExponent = new DataView(successMessage).getInt8(pointTo,true);
+                    pointTo += 1;
+                    DepthDiffStreamEvent["qtyExponent"] = qtyExponent.toString();
+
+                    let bids_group_blockLength = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthDiffStreamEvent["bids_group_blockLength"] = bids_group_blockLength.toString();
+
+                    let bids_numInGroup = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthDiffStreamEvent["bids_numInGroup"] = bids_numInGroup.toString();
+
+                    let bids = new Array(bids_numInGroup);
+
+                    for(let i=0; i<bids.length; i++){
+                        let bid = {};
+
+                        let price = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        bid["price"] = (price.toString()*Math.pow(10,priceExponent)).toString();
+
+                        let qty = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        bid["qty"] = (qty.toString()*Math.pow(10,qtyExponent)).toString();
+
+                        bids[i] = bid;
+                    }
+
+                    DepthDiffStreamEvent["bids"] = bids;
+
+
+
+                    let asks_group_blockLength = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthDiffStreamEvent["asks_group_blockLength"] = asks_group_blockLength.toString();
+
+                    let asks_numInGroup = new DataView(successMessage).getUint16(pointTo,true);
+                    pointTo += 2;
+                    DepthDiffStreamEvent["asks_numInGroup"] = asks_numInGroup.toString();
+
+                    let asks = new Array(asks_numInGroup);
+
+                    for(let i=0; i<asks.length; i++){
+                        let ask = {};
+
+                        let price = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        ask["price"] = (price.toString()*Math.pow(10,priceExponent)).toString();
+
+                        let qty = new DataView(successMessage).getBigInt64(pointTo,true);
+                        pointTo += 8;
+                        ask["qty"] = (qty.toString()*Math.pow(10,qtyExponent)).toString();
+
+                        asks[i] = ask;
+                    }
+
+                    DepthDiffStreamEvent["asks"] = asks;
+
+
+                    let symbol_length = new DataView(successMessage).getUint8(pointTo,true);
+                    pointTo += 1;
+                    
+                    let symbol = "";
+
+                    for(let i=0; i<symbol_length; i++){
+                        let char = new DataView(successMessage).getUint8(pointTo+i,true);
+                        symbol += String.fromCharCode(char);
+                    }
+
+                    DepthDiffStreamEvent["symbol"] = symbol;
+
+                    result["DepthDiffStreamEvent"] = DepthDiffStreamEvent;
+                }
+            
+            }
+
+        
+
+            let display = {
+                "hexString": hexString,
+                "detail": result,
+                
+            }
+            insertMessage(JSON.stringify(result));
+            console.log(display)
+
+                
             /*
             let reader = new FileReader();
             reader.readAsArrayBuffer(data);
@@ -378,6 +723,20 @@
                 // reader.result 包含被转化为类型数组 typed array 的 blob
             });
             */
+        }
+
+        function arrayBufferToHexString(buffer) {
+            const byteArray = new Uint8Array(buffer);
+            const hexString = [];
+            for (let i = 0; i < byteArray.byteLength; i++) {
+                if(byteArray[i] < 16){
+                    hexString.push("0"+byteArray[i].toString(16));
+                }
+                else{
+                    hexString.push(byteArray[i].toString(16));
+                }
+            }
+            return hexString.join('');
         }
     </script>
 
