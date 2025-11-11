@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -128,8 +129,10 @@
                     <datalist id="urlList" class="datalist">
                         <option value="spot mainnet:wss://ws-api.binance.com:443/ws-api/v3">spot mainnet: wss://ws-api.binance.com:443/ws-api/v3</option>
                         <option value="spot testnet:wss://ws-api.testnet.binance.vision/ws-api/v3">spot testnet: wss://ws-api.testnet.binance.vision/ws-api/v3</option>
-			<option value="UM futures mainnet:wss://ws-fapi.binance.com/ws-fapi/v1">UM futures mainnet: wss://ws-fapi.binance.com/ws-fapi/v1</option>
-		    </datalist>
+			            <option value="UM futures mainnet:wss://ws-fapi.binance.com/ws-fapi/v1">UM futures mainnet: wss://ws-fapi.binance.com/ws-fapi/v1</option>
+                        <option value="UM futures demo:wss://ws-api.testnet.binance.vision/ws-api/v3">UM futures demo: wss://ws-api.testnet.binance.vision/ws-api/v3</option>
+		            
+                    </datalist>
                     <button class="main-operator" id="ws_link">link</button>
                     <button class="main-operator" id="ws_close">close</button>
                 </div>
@@ -213,6 +216,12 @@
                                             <td><input type="checkbox" checked></td>
                                             <td><input class="" type="text" value="quantity"></td>
                                             <td><input type="text" value="0.01"></td>
+                                            <td><button>-</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" checked></td>
+                                            <td><input class="" type="text" value="timestamp"></td>
+                                            <td><input id="timestamp" type="text"></td>
                                             <td><button>-</button></td>
                                         </tr>
                                     </tbody>
@@ -787,78 +796,80 @@
                 }
                 
             }
-            
-            request_data.params.timestamp = Date.now();
-            request_data.params.apiKey = api_key.value;
-            
-            let queryparameter="";
-            Object.keys(request_data.params).sort().map((key)=>{
-                queryparameter += key + "=" + request_data.params[key] + "&";
-            });
 
-            queryparameter = queryparameter.substr(0,queryparameter.length-1);
-            console.log(queryparameter)
-            
-            if(keyFormat.value === "HMAC"){
-                hmac.start('sha256',hmac_secret_key.value.replace(/[\s]+$/g,''));
-                hmac.update(queryparameter);
+            if(!is_empty(api_key.value))
+                    request_data.params.apiKey = api_key.value;
 
-                let signature = hmac.digest().toHex();
-
+            if("timestamp" in request_data.params){
+                request_data.params.timestamp = Date.now()
                 
-                request_data.params.signature = signature;
+                let queryparameter="";
+                Object.keys(request_data.params).sort().map((key)=>{
+                    queryparameter += key + "=" + request_data.params[key] + "&";
+                });
 
-                request_message.value = json_style(JSON.stringify(request_data));
-                console.log(request_data)
-            }
-            else if(keyFormat.value === "RSA"){
-                try{
-                    let privateKey = pki.privateKeyFromPem(asym_private_key.value);
-                    let md = forge.md.sha256.create();
-                    md.update(queryparameter,"utf8");
-                        
-                    let signature = btoa(privateKey.sign(md));
+                queryparameter = queryparameter.substr(0,queryparameter.length-1);
+                console.log(queryparameter)
+                
+                if(keyFormat.value === "HMAC"){
+                    hmac.start('sha256',hmac_secret_key.value.replace(/[\s]+$/g,''));
+                    hmac.update(forge.util.encodeUtf8(queryparameter));
 
-                    request_data.params.signature = signature;
+                    let signature = hmac.digest().toHex();
+
                     
-                    request_message.value = json_style(JSON.stringify(request_data));
-                    console.log(request_data)
+                    request_data.params.signature = signature;
+
                 }
-                catch(error){
-                    insertMessage(error)
-                    insertMessage("Please set a valid RSA private key.");
-                    console.log(error);
-                }
-                
-            }
-            else if(keyFormat.value === "ED25519"){
+                else if(keyFormat.value === "RSA"){
+                    try{
+                        let privateKey = pki.privateKeyFromPem(asym_private_key.value);
+                        let md = forge.md.sha256.create();
+                        md.update(queryparameter,"utf8");
+                            
+                        let signature = btoa(privateKey.sign(md));
 
-                try{
-
-                    let ed25519_prvkey_pem = asym_private_key.value.replace(/[\s]+$/g,'');
-                    let ed25519_prvkey = ed25519_pem2prvbuf(ed25519_prvkey_pem);
-
-                    let sig = pki.ed25519.sign({
-                        message: queryparameter,
-                        encoding: "uft8",
-                        privateKey: ed25519_prvkey
-                    })
-                    console.log(arrbuf2binarystr(sig))
-                    request_data.params.signature = btoa(arrbuf2binarystr(sig));
+                        request_data.params.signature = signature;
                         
-                    request_message.value = json_style(JSON.stringify(request_data));
-
+                    
+                    }
+                    catch(error){
+                        insertMessage(error)
+                        insertMessage("Please set a valid RSA private key.");
+                        console.log(error);
+                    }
+                    
                 }
-                catch(error){
+                else if(keyFormat.value === "ED25519"){
 
-                    insertMessage(error)
-                    insertMessage("Please set a valid ED25519 private key.");
-                    console.log(error);
+                    try{
 
+                        let ed25519_prvkey_pem = asym_private_key.value.replace(/[\s]+$/g,'');
+                        let ed25519_prvkey = ed25519_pem2prvbuf(ed25519_prvkey_pem);
+
+                        let sig = pki.ed25519.sign({
+                            message: queryparameter,
+                            encoding: "uft8",
+                            privateKey: ed25519_prvkey
+                        })
+                        console.log(arrbuf2binarystr(sig))
+                        request_data.params.signature = btoa(arrbuf2binarystr(sig));
+                            
+
+                    }
+                    catch(error){
+
+                        insertMessage(error)
+                        insertMessage("Please set a valid ED25519 private key.");
+                        console.log(error);
+
+                    }
                 }
             }
-            
+            request_message.value = json_style(JSON.stringify(request_data));
+            console.log(request_data)
         })
+
 
     </script>
 
@@ -923,6 +934,7 @@
                     raw_text.style.display = "block";
                     raw_table.style.display = "none";
                     raw_switch.innerHTML = "Table";
+                    
                     break;
 
                 case "Table":
@@ -946,7 +958,7 @@
                     raw_text.style.display = "none";
                     raw_table.style.display = "block";
                     raw_switch.innerHTML = "Raw";
-
+                   
             }
         })
 
@@ -1104,4 +1116,6 @@
             }
         }
     </script>
+
+ 
 </html>
